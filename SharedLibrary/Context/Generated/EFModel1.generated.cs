@@ -25,11 +25,15 @@ namespace SharedLibrary
    public partial class EFModel1 : Microsoft.EntityFrameworkCore.DbContext
    {
       #region DbSets
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::SharedLibrary.Censo_Escola> Censo_Escola { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::SharedLibrary.CorreioEletronico> CorreioEletronico { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::SharedLibrary.Enderecos> Enderecos { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::SharedLibrary.Escola> Escola { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::SharedLibrary.Estado> Estado { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::SharedLibrary.MantenedoraDaEscola> MantenedoraDaEscola { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::SharedLibrary.Municipio> Municipio { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::SharedLibrary.Regiao> Regiao { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::SharedLibrary.Telefone> Telefone { get; set; }
       #endregion DbSets
 
       /// <inheritdoc />
@@ -54,7 +58,119 @@ namespace SharedLibrary
          base.OnModelCreating(modelBuilder);
          OnModelCreatingImpl(modelBuilder);
 
-         modelBuilder.HasDefaultSchema("dbo");
+         modelBuilder.HasDefaultSchema("SQLite");
+
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .ToTable("Censo_Escola")
+                     .HasKey(t => new { t.Cod_Entidade, t.Ano });
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Cod_Entidade)
+                     .IsRequired()
+                     .ValueGeneratedOnAdd();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Ano)
+                     .IsRequired()
+                     .ValueGeneratedOnAdd();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.ID_Dependencia_Adm)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Dependencia_Administrativa)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Rede)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.DataInicioAnoLetivo)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.DataFimAnoLetivo)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Situacao_Funcionamento)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.EF_Organizado_Em_Ciclos)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Atividade_Complementar)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Documento_Regulamentacao)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Acessibilidade)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Dependencias_Pne)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Sanitario_Pne)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.AEE)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Num_Salas_Existentes)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Num_Salas_Usadas)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Num_Sala_Leitura)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Num_Funcionarios)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Educacao_Indigena)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Lingua_Indigena)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Lingua_Portuguesa)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Espaco_Turma_Pba)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Abre_Final_Semana)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Mod_Ens_Regular)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Mod_Educ_Especial)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .Property(t => t.Mod_Eja)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .HasOne(x => x.CorreioEletronico)
+                     .WithOne()
+                     .HasForeignKey<global::SharedLibrary.Censo_Escola>("CorreioEletronico_CorreioEletronico_Id")
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Censo_Escola>()
+                     .HasMany(x => x.Telefone)
+                     .WithOne()
+                     .HasForeignKey("Telefone_Telefone_Id")
+                     .IsRequired();
+
+         modelBuilder.Entity<global::SharedLibrary.CorreioEletronico>()
+                     .ToTable("CorreioEletronico")
+                     .HasKey(t => new { t.Cod_Entidade, t.Ano });
+         modelBuilder.Entity<global::SharedLibrary.CorreioEletronico>()
+                     .Property(t => t.Cod_Entidade)
+                     .IsRequired()
+                     .ValueGeneratedOnAdd();
+         modelBuilder.Entity<global::SharedLibrary.CorreioEletronico>()
+                     .Property(t => t.Ano)
+                     .IsRequired()
+                     .ValueGeneratedOnAdd();
+         modelBuilder.Entity<global::SharedLibrary.CorreioEletronico>()
+                     .Property(t => t.Email)
+                     .IsRequired();
 
          modelBuilder.Entity<global::SharedLibrary.Enderecos>()
                      .ToTable("Enderecos")
@@ -87,12 +203,12 @@ namespace SharedLibrary
          modelBuilder.Entity<global::SharedLibrary.Enderecos>()
                      .HasOne(x => x.Escola)
                      .WithOne(x => x.Endereco)
-                     .HasForeignKey<global::SharedLibrary.Escola>("Cod_Entidade")
+                     .HasForeignKey<global::SharedLibrary.Escola>("Endereco_Id")
                      .IsRequired();
          modelBuilder.Entity<global::SharedLibrary.Enderecos>()
                      .HasOne(x => x.Municipio)
                      .WithMany(x => x.Endereco)
-                     .HasForeignKey("Cod_Municipio");
+                     .HasForeignKey("Municipio_Id");
 
          modelBuilder.Entity<global::SharedLibrary.Escola>()
                      .ToTable("Escola")
@@ -122,6 +238,15 @@ namespace SharedLibrary
          modelBuilder.Entity<global::SharedLibrary.Escola>()
                      .Property(t => t.Instituicao_Sem_Fim_Lucrativo)
                      .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Escola>()
+                     .HasOne(x => x.MantenedoraDaEscola)
+                     .WithOne()
+                     .HasForeignKey<global::SharedLibrary.Escola>("MantenedoraDaEscola_MantenedoraDaEscola_Id")
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Escola>()
+                     .HasOne(x => x.Censo_Escola)
+                     .WithMany(x => x.Escola)
+                     .HasForeignKey("Censo_Escola_Id");
 
          modelBuilder.Entity<global::SharedLibrary.Estado>()
                      .ToTable("Estado")
@@ -142,7 +267,30 @@ namespace SharedLibrary
          modelBuilder.Entity<global::SharedLibrary.Estado>()
                      .HasOne(x => x.Regiao)
                      .WithMany(x => x.Estado)
-                     .HasForeignKey("Cod_Regiao");
+                     .HasForeignKey("Regiao_Id");
+
+         modelBuilder.Entity<global::SharedLibrary.MantenedoraDaEscola>()
+                     .ToTable("MantenedoraDaEscola")
+                     .HasKey(t => t.Cod_Entidade);
+         modelBuilder.Entity<global::SharedLibrary.MantenedoraDaEscola>()
+                     .Property(t => t.Cod_Entidade)
+                     .IsRequired()
+                     .ValueGeneratedOnAdd();
+         modelBuilder.Entity<global::SharedLibrary.MantenedoraDaEscola>()
+                     .Property(t => t.Empresa)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.MantenedoraDaEscola>()
+                     .Property(t => t.Sindicato)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.MantenedoraDaEscola>()
+                     .Property(t => t.Sistema_S_Sesi)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.MantenedoraDaEscola>()
+                     .Property(t => t.Senai)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.MantenedoraDaEscola>()
+                     .Property(t => t.Sesc)
+                     .IsRequired();
 
          modelBuilder.Entity<global::SharedLibrary.Municipio>()
                      .ToTable("Municipio")
@@ -160,7 +308,7 @@ namespace SharedLibrary
          modelBuilder.Entity<global::SharedLibrary.Municipio>()
                      .HasOne(x => x.Estado)
                      .WithMany(x => x.Municipio)
-                     .HasForeignKey("Cod_Estado");
+                     .HasForeignKey("Estado_Id");
 
          modelBuilder.Entity<global::SharedLibrary.Regiao>()
                      .ToTable("Regiao")
@@ -171,6 +319,28 @@ namespace SharedLibrary
                      .ValueGeneratedOnAdd();
          modelBuilder.Entity<global::SharedLibrary.Regiao>()
                      .Property(t => t.Nome_Regiao)
+                     .IsRequired();
+
+         modelBuilder.Entity<global::SharedLibrary.Telefone>()
+                     .ToTable("Telefone")
+                     .HasKey(t => new { t.Numero, t.Ano, t.Cod_Entidade });
+         modelBuilder.Entity<global::SharedLibrary.Telefone>()
+                     .Property(t => t.Numero)
+                     .IsRequired()
+                     .ValueGeneratedOnAdd();
+         modelBuilder.Entity<global::SharedLibrary.Telefone>()
+                     .Property(t => t.Ano)
+                     .IsRequired()
+                     .ValueGeneratedOnAdd();
+         modelBuilder.Entity<global::SharedLibrary.Telefone>()
+                     .Property(t => t.Cod_Entidade)
+                     .IsRequired()
+                     .ValueGeneratedOnAdd();
+         modelBuilder.Entity<global::SharedLibrary.Telefone>()
+                     .Property(t => t.DDD)
+                     .IsRequired();
+         modelBuilder.Entity<global::SharedLibrary.Telefone>()
+                     .Property(t => t.FAX)
                      .IsRequired();
 
          OnModelCreatedImpl(modelBuilder);

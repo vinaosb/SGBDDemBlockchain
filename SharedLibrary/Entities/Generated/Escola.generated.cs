@@ -33,6 +33,9 @@ namespace SharedLibrary
       /// </summary>
       protected Escola()
       {
+         // NOTE: This class has one-to-one associations with Escola.
+         // One-to-one associations are not validated in constructors since this causes a scenario where each one must be constructed before the other.
+
          Init();
       }
 
@@ -46,8 +49,12 @@ namespace SharedLibrary
       /// <param name="id_latitude"></param>
       /// <param name="id_longitude"></param>
       /// <param name="instituicao_sem_fim_lucrativo"></param>
-      public Escola(int cod_endereco, bool localizacao, string nome, string categoria, string id_latitude, string id_longitude, string instituicao_sem_fim_lucrativo)
+      /// <param name="censo_escola"></param>
+      public Escola(int cod_endereco, bool localizacao, string nome, string categoria, string id_latitude, string id_longitude, string instituicao_sem_fim_lucrativo, global::SharedLibrary.Censo_Escola censo_escola)
       {
+         // NOTE: This class has one-to-one associations with Escola.
+         // One-to-one associations are not validated in constructors since this causes a scenario where each one must be constructed before the other.
+
          this.Cod_Endereco = cod_endereco;
          this.Localizacao = localizacao;
          if (string.IsNullOrEmpty(nome)) throw new ArgumentNullException(nameof(nome));
@@ -60,6 +67,9 @@ namespace SharedLibrary
          this.ID_Longitude = id_longitude;
          if (string.IsNullOrEmpty(instituicao_sem_fim_lucrativo)) throw new ArgumentNullException(nameof(instituicao_sem_fim_lucrativo));
          this.Instituicao_Sem_Fim_Lucrativo = instituicao_sem_fim_lucrativo;
+         if (censo_escola == null) throw new ArgumentNullException(nameof(censo_escola));
+         this.Censo_Escola = censo_escola;
+
          Init();
       }
 
@@ -73,9 +83,10 @@ namespace SharedLibrary
       /// <param name="id_latitude"></param>
       /// <param name="id_longitude"></param>
       /// <param name="instituicao_sem_fim_lucrativo"></param>
-      public static Escola Create(int cod_endereco, bool localizacao, string nome, string categoria, string id_latitude, string id_longitude, string instituicao_sem_fim_lucrativo)
+      /// <param name="censo_escola"></param>
+      public static Escola Create(int cod_endereco, bool localizacao, string nome, string categoria, string id_latitude, string id_longitude, string instituicao_sem_fim_lucrativo, global::SharedLibrary.Censo_Escola censo_escola)
       {
-         return new Escola(cod_endereco, localizacao, nome, categoria, id_latitude, id_longitude, instituicao_sem_fim_lucrativo);
+         return new Escola(cod_endereco, localizacao, nome, categoria, id_latitude, id_longitude, instituicao_sem_fim_lucrativo, censo_escola);
       }
 
       /*************************************************************************
@@ -135,10 +146,17 @@ namespace SharedLibrary
        * Persistent navigation properties
        *************************************************************************/
 
+      public virtual global::SharedLibrary.MantenedoraDaEscola MantenedoraDaEscola { get; set; }
+
       /// <summary>
       /// Required
       /// </summary>
       public virtual global::SharedLibrary.Enderecos Endereco { get; set; }
+
+      /// <summary>
+      /// Required
+      /// </summary>
+      public virtual global::SharedLibrary.Censo_Escola Censo_Escola { get; set; }
 
    }
 }
