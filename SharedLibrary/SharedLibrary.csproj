@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.9.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.6.0" />
   </ItemGroup>
 
@@ -14,8 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Context\Custom\" />
-    <Folder Include="Entities\Custom\" />
     <Folder Include="Entities\Generated\" />
     <Folder Include="Enums\Custom\" />
     <Folder Include="Enums\Generated\" />
