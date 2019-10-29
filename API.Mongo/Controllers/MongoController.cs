@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SharedLibrary.Context.Custom;
 using SharedLibrary.Entities.Custom;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using static SharedLibrary.Entities.Custom.ExtrasDaEscola;
 
 namespace API.Mongo.Controllers
