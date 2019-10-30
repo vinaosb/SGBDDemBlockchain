@@ -35,7 +35,7 @@ namespace API.Mongo.Controllers
 		{
 			_extrasContext.Upsert(extra);
 
-			return CreatedAtRoute("GetExtra", new { id = extra.ID, extra } );
+			return CreatedAtRoute("GetExtra", new { id = extra.ID, extra });
 		}
 
 		[HttpPut]

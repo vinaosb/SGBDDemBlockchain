@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using SharedLibrary.Entities.Custom;
+using System.Collections.Generic;
 using static SharedLibrary.Entities.Custom.ExtrasDaEscola;
 
 namespace SharedLibrary.Context.Custom
