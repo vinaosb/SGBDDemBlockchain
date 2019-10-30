@@ -11,48 +11,48 @@ namespace API.SQL.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CensoEscolasController : ControllerBase
+    public class RegioesController : ControllerBase
     {
         private readonly postgresContext _context;
 
-        public CensoEscolasController(postgresContext context)
+        public RegioesController(postgresContext context)
         {
             _context = context;
         }
 
-        // GET: api/CensoEscolas
+        // GET: api/Regioes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CensoEscola>>> GetCensoEscola()
+        public async Task<ActionResult<IEnumerable<Regiao>>> GetRegiao()
         {
-            return await _context.CensoEscola.ToListAsync();
+            return await _context.Regiao.ToListAsync();
         }
 
-        // GET: api/CensoEscolas/5
+        // GET: api/Regioes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CensoEscola>> GetCensoEscola(short id)
+        public async Task<ActionResult<Regiao>> GetRegiao(long id)
         {
-            var censoEscola = await _context.CensoEscola.FindAsync(id);
+            var regiao = await _context.Regiao.FindAsync(id);
 
-            if (censoEscola == null)
+            if (regiao == null)
             {
                 return NotFound();
             }
 
-            return censoEscola;
+            return regiao;
         }
 
-        // PUT: api/CensoEscolas/5
+        // PUT: api/Regioes/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCensoEscola(short id, CensoEscola censoEscola)
+        public async Task<IActionResult> PutRegiao(long id, Regiao regiao)
         {
-            if (id != censoEscola.Ano)
+            if (id != regiao.CodRegiao)
             {
                 return BadRequest();
             }
 
-            _context.Entry(censoEscola).State = EntityState.Modified;
+            _context.Entry(regiao).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace API.SQL.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CensoEscolaExists(id))
+                if (!RegiaoExists(id))
                 {
                     return NotFound();
                 }
@@ -73,20 +73,20 @@ namespace API.SQL.Controllers
             return NoContent();
         }
 
-        // POST: api/CensoEscolas
+        // POST: api/Regioes
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<CensoEscola>> PostCensoEscola(CensoEscola censoEscola)
+        public async Task<ActionResult<Regiao>> PostRegiao(Regiao regiao)
         {
-            _context.CensoEscola.Add(censoEscola);
+            _context.Regiao.Add(regiao);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (CensoEscolaExists(censoEscola.Ano))
+                if (RegiaoExists(regiao.CodRegiao))
                 {
                     return Conflict();
                 }
@@ -96,28 +96,28 @@ namespace API.SQL.Controllers
                 }
             }
 
-            return CreatedAtAction("GetCensoEscola", new { id = censoEscola.Ano }, censoEscola);
+            return CreatedAtAction("GetRegiao", new { id = regiao.CodRegiao }, regiao);
         }
 
-        // DELETE: api/CensoEscolas/5
+        // DELETE: api/Regioes/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CensoEscola>> DeleteCensoEscola(short id)
+        public async Task<ActionResult<Regiao>> DeleteRegiao(long id)
         {
-            var censoEscola = await _context.CensoEscola.FindAsync(id);
-            if (censoEscola == null)
+            var regiao = await _context.Regiao.FindAsync(id);
+            if (regiao == null)
             {
                 return NotFound();
             }
 
-            _context.CensoEscola.Remove(censoEscola);
+            _context.Regiao.Remove(regiao);
             await _context.SaveChangesAsync();
 
-            return censoEscola;
+            return regiao;
         }
 
-        private bool CensoEscolaExists(short id)
+        private bool RegiaoExists(long id)
         {
-            return _context.CensoEscola.Any(e => e.Ano == id);
+            return _context.Regiao.Any(e => e.CodRegiao == id);
         }
     }
 }

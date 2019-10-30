@@ -11,48 +11,48 @@ namespace API.SQL.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CensoEscolasController : ControllerBase
+    public class MunicipiosController : ControllerBase
     {
         private readonly postgresContext _context;
 
-        public CensoEscolasController(postgresContext context)
+        public MunicipiosController(postgresContext context)
         {
             _context = context;
         }
 
-        // GET: api/CensoEscolas
+        // GET: api/Municipios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CensoEscola>>> GetCensoEscola()
+        public async Task<ActionResult<IEnumerable<Municipio>>> GetMunicipio()
         {
-            return await _context.CensoEscola.ToListAsync();
+            return await _context.Municipio.ToListAsync();
         }
 
-        // GET: api/CensoEscolas/5
+        // GET: api/Municipios/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CensoEscola>> GetCensoEscola(short id)
+        public async Task<ActionResult<Municipio>> GetMunicipio(long id)
         {
-            var censoEscola = await _context.CensoEscola.FindAsync(id);
+            var municipio = await _context.Municipio.FindAsync(id);
 
-            if (censoEscola == null)
+            if (municipio == null)
             {
                 return NotFound();
             }
 
-            return censoEscola;
+            return municipio;
         }
 
-        // PUT: api/CensoEscolas/5
+        // PUT: api/Municipios/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCensoEscola(short id, CensoEscola censoEscola)
+        public async Task<IActionResult> PutMunicipio(long id, Municipio municipio)
         {
-            if (id != censoEscola.Ano)
+            if (id != municipio.CodMunicipio)
             {
                 return BadRequest();
             }
 
-            _context.Entry(censoEscola).State = EntityState.Modified;
+            _context.Entry(municipio).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace API.SQL.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CensoEscolaExists(id))
+                if (!MunicipioExists(id))
                 {
                     return NotFound();
                 }
@@ -73,20 +73,20 @@ namespace API.SQL.Controllers
             return NoContent();
         }
 
-        // POST: api/CensoEscolas
+        // POST: api/Municipios
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<CensoEscola>> PostCensoEscola(CensoEscola censoEscola)
+        public async Task<ActionResult<Municipio>> PostMunicipio(Municipio municipio)
         {
-            _context.CensoEscola.Add(censoEscola);
+            _context.Municipio.Add(municipio);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (CensoEscolaExists(censoEscola.Ano))
+                if (MunicipioExists(municipio.CodMunicipio))
                 {
                     return Conflict();
                 }
@@ -96,28 +96,28 @@ namespace API.SQL.Controllers
                 }
             }
 
-            return CreatedAtAction("GetCensoEscola", new { id = censoEscola.Ano }, censoEscola);
+            return CreatedAtAction("GetMunicipio", new { id = municipio.CodMunicipio }, municipio);
         }
 
-        // DELETE: api/CensoEscolas/5
+        // DELETE: api/Municipios/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CensoEscola>> DeleteCensoEscola(short id)
+        public async Task<ActionResult<Municipio>> DeleteMunicipio(long id)
         {
-            var censoEscola = await _context.CensoEscola.FindAsync(id);
-            if (censoEscola == null)
+            var municipio = await _context.Municipio.FindAsync(id);
+            if (municipio == null)
             {
                 return NotFound();
             }
 
-            _context.CensoEscola.Remove(censoEscola);
+            _context.Municipio.Remove(municipio);
             await _context.SaveChangesAsync();
 
-            return censoEscola;
+            return municipio;
         }
 
-        private bool CensoEscolaExists(short id)
+        private bool MunicipioExists(long id)
         {
-            return _context.CensoEscola.Any(e => e.Ano == id);
+            return _context.Municipio.Any(e => e.CodMunicipio == id);
         }
     }
 }

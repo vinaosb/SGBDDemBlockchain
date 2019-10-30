@@ -11,48 +11,48 @@ namespace API.SQL.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CensoEscolasController : ControllerBase
+    public class EnderecosController : ControllerBase
     {
         private readonly postgresContext _context;
 
-        public CensoEscolasController(postgresContext context)
+        public EnderecosController(postgresContext context)
         {
             _context = context;
         }
 
-        // GET: api/CensoEscolas
+        // GET: api/Enderecoes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CensoEscola>>> GetCensoEscola()
+        public async Task<ActionResult<IEnumerable<Endereco>>> GetEndereco()
         {
-            return await _context.CensoEscola.ToListAsync();
+            return await _context.Endereco.ToListAsync();
         }
 
-        // GET: api/CensoEscolas/5
+        // GET: api/Enderecoes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CensoEscola>> GetCensoEscola(short id)
+        public async Task<ActionResult<Endereco>> GetEndereco(long id)
         {
-            var censoEscola = await _context.CensoEscola.FindAsync(id);
+            var endereco = await _context.Endereco.FindAsync(id);
 
-            if (censoEscola == null)
+            if (endereco == null)
             {
                 return NotFound();
             }
 
-            return censoEscola;
+            return endereco;
         }
 
-        // PUT: api/CensoEscolas/5
+        // PUT: api/Enderecoes/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCensoEscola(short id, CensoEscola censoEscola)
+        public async Task<IActionResult> PutEndereco(long id, Endereco endereco)
         {
-            if (id != censoEscola.Ano)
+            if (id != endereco.CodEndereco)
             {
                 return BadRequest();
             }
 
-            _context.Entry(censoEscola).State = EntityState.Modified;
+            _context.Entry(endereco).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace API.SQL.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CensoEscolaExists(id))
+                if (!EnderecoExists(id))
                 {
                     return NotFound();
                 }
@@ -73,20 +73,20 @@ namespace API.SQL.Controllers
             return NoContent();
         }
 
-        // POST: api/CensoEscolas
+        // POST: api/Enderecoes
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<CensoEscola>> PostCensoEscola(CensoEscola censoEscola)
+        public async Task<ActionResult<Endereco>> PostEndereco(Endereco endereco)
         {
-            _context.CensoEscola.Add(censoEscola);
+            _context.Endereco.Add(endereco);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (CensoEscolaExists(censoEscola.Ano))
+                if (EnderecoExists(endereco.CodEndereco))
                 {
                     return Conflict();
                 }
@@ -96,28 +96,28 @@ namespace API.SQL.Controllers
                 }
             }
 
-            return CreatedAtAction("GetCensoEscola", new { id = censoEscola.Ano }, censoEscola);
+            return CreatedAtAction("GetEndereco", new { id = endereco.CodEndereco }, endereco);
         }
 
-        // DELETE: api/CensoEscolas/5
+        // DELETE: api/Enderecoes/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CensoEscola>> DeleteCensoEscola(short id)
+        public async Task<ActionResult<Endereco>> DeleteEndereco(long id)
         {
-            var censoEscola = await _context.CensoEscola.FindAsync(id);
-            if (censoEscola == null)
+            var endereco = await _context.Endereco.FindAsync(id);
+            if (endereco == null)
             {
                 return NotFound();
             }
 
-            _context.CensoEscola.Remove(censoEscola);
+            _context.Endereco.Remove(endereco);
             await _context.SaveChangesAsync();
 
-            return censoEscola;
+            return endereco;
         }
 
-        private bool CensoEscolaExists(short id)
+        private bool EnderecoExists(long id)
         {
-            return _context.CensoEscola.Any(e => e.Ano == id);
+            return _context.Endereco.Any(e => e.CodEndereco == id);
         }
     }
 }

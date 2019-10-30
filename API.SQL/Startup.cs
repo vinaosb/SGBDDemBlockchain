@@ -1,4 +1,3 @@
-using API.SQL.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using API.SQL.Models;
 
 namespace API.SQL
 {
@@ -21,7 +21,7 @@ namespace API.SQL
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddDbContext<CensoEscolaContext>(opt => opt.UseInMemoryDatabase("CensoEscola"));
+			services.AddDbContext<postgresContext>(options => options.UseNpgsql("escolasContext"));
 			services.AddControllers();
 		}
 

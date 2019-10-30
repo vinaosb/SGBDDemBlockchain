@@ -11,48 +11,48 @@ namespace API.SQL.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CensoEscolasController : ControllerBase
+    public class CorreioEletronicoController : ControllerBase
     {
         private readonly postgresContext _context;
 
-        public CensoEscolasController(postgresContext context)
+        public CorreioEletronicoController(postgresContext context)
         {
             _context = context;
         }
 
-        // GET: api/CensoEscolas
+        // GET: api/CorreioEletronicoes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CensoEscola>>> GetCensoEscola()
+        public async Task<ActionResult<IEnumerable<CorreioEletronico>>> GetCorreioEletronico()
         {
-            return await _context.CensoEscola.ToListAsync();
+            return await _context.CorreioEletronico.ToListAsync();
         }
 
-        // GET: api/CensoEscolas/5
+        // GET: api/CorreioEletronicoes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CensoEscola>> GetCensoEscola(short id)
+        public async Task<ActionResult<CorreioEletronico>> GetCorreioEletronico(long id)
         {
-            var censoEscola = await _context.CensoEscola.FindAsync(id);
+            var correioEletronico = await _context.CorreioEletronico.FindAsync(id);
 
-            if (censoEscola == null)
+            if (correioEletronico == null)
             {
                 return NotFound();
             }
 
-            return censoEscola;
+            return correioEletronico;
         }
 
-        // PUT: api/CensoEscolas/5
+        // PUT: api/CorreioEletronicoes/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCensoEscola(short id, CensoEscola censoEscola)
+        public async Task<IActionResult> PutCorreioEletronico(long id, CorreioEletronico correioEletronico)
         {
-            if (id != censoEscola.Ano)
+            if (id != correioEletronico.CodEntidade)
             {
                 return BadRequest();
             }
 
-            _context.Entry(censoEscola).State = EntityState.Modified;
+            _context.Entry(correioEletronico).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace API.SQL.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CensoEscolaExists(id))
+                if (!CorreioEletronicoExists(id))
                 {
                     return NotFound();
                 }
@@ -73,20 +73,20 @@ namespace API.SQL.Controllers
             return NoContent();
         }
 
-        // POST: api/CensoEscolas
+        // POST: api/CorreioEletronicoes
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<CensoEscola>> PostCensoEscola(CensoEscola censoEscola)
+        public async Task<ActionResult<CorreioEletronico>> PostCorreioEletronico(CorreioEletronico correioEletronico)
         {
-            _context.CensoEscola.Add(censoEscola);
+            _context.CorreioEletronico.Add(correioEletronico);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (CensoEscolaExists(censoEscola.Ano))
+                if (CorreioEletronicoExists(correioEletronico.CodEntidade))
                 {
                     return Conflict();
                 }
@@ -96,28 +96,28 @@ namespace API.SQL.Controllers
                 }
             }
 
-            return CreatedAtAction("GetCensoEscola", new { id = censoEscola.Ano }, censoEscola);
+            return CreatedAtAction("GetCorreioEletronico", new { id = correioEletronico.CodEntidade }, correioEletronico);
         }
 
-        // DELETE: api/CensoEscolas/5
+        // DELETE: api/CorreioEletronicoes/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CensoEscola>> DeleteCensoEscola(short id)
+        public async Task<ActionResult<CorreioEletronico>> DeleteCorreioEletronico(long id)
         {
-            var censoEscola = await _context.CensoEscola.FindAsync(id);
-            if (censoEscola == null)
+            var correioEletronico = await _context.CorreioEletronico.FindAsync(id);
+            if (correioEletronico == null)
             {
                 return NotFound();
             }
 
-            _context.CensoEscola.Remove(censoEscola);
+            _context.CorreioEletronico.Remove(correioEletronico);
             await _context.SaveChangesAsync();
 
-            return censoEscola;
+            return correioEletronico;
         }
 
-        private bool CensoEscolaExists(short id)
+        private bool CorreioEletronicoExists(long id)
         {
-            return _context.CensoEscola.Any(e => e.Ano == id);
+            return _context.CorreioEletronico.Any(e => e.CodEntidade == id);
         }
     }
 }
