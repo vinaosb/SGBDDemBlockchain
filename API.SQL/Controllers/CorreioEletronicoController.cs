@@ -26,10 +26,10 @@ namespace API.SQL.Controllers
 		}
 
 		// GET: api/CorreioEletronicoes/5
-		[HttpGet("{id}")]
-		public async Task<ActionResult<CorreioEletronico>> GetCorreioEletronico(long id)
+		[HttpGet("{ano}/{id}")]
+		public async Task<ActionResult<CorreioEletronico>> GetCorreioEletronico(short ano, long id)
 		{
-			var correioEletronico = await _context.CorreioEletronico.FindAsync(id);
+			var correioEletronico = await _context.CorreioEletronico.Where(ce => ce.Ano == ano && ce.CodEntidade == id).FirstAsync();
 
 			if (correioEletronico == null)
 			{
@@ -42,10 +42,10 @@ namespace API.SQL.Controllers
 		// PUT: api/CorreioEletronicoes/5
 		// To protect from overposting attacks, please enable the specific properties you want to bind to, for
 		// more details see https://aka.ms/RazorPagesCRUD.
-		[HttpPut("{id}")]
-		public async Task<IActionResult> PutCorreioEletronico(long id, CorreioEletronico correioEletronico)
+		[HttpPut("{ano}/{id}")]
+		public async Task<IActionResult> PutCorreioEletronico(short ano, long id, CorreioEletronico correioEletronico)
 		{
-			if (id != correioEletronico.CodEntidade)
+			if (id != correioEletronico.CodEntidade || ano != correioEletronico.Ano)
 			{
 				return BadRequest();
 			}
@@ -58,7 +58,7 @@ namespace API.SQL.Controllers
 			}
 			catch (DbUpdateConcurrencyException)
 			{
-				if (!CorreioEletronicoExists(id))
+				if (!CorreioEletronicoExists(ano,id))
 				{
 					return NotFound();
 				}
@@ -84,7 +84,7 @@ namespace API.SQL.Controllers
 			}
 			catch (DbUpdateException)
 			{
-				if (CorreioEletronicoExists(correioEletronico.CodEntidade))
+				if (CorreioEletronicoExists(correioEletronico.Ano,correioEletronico.CodEntidade))
 				{
 					return Conflict();
 				}
@@ -94,14 +94,14 @@ namespace API.SQL.Controllers
 				}
 			}
 
-			return CreatedAtAction("GetCorreioEletronico", new { id = correioEletronico.CodEntidade }, correioEletronico);
+			return CreatedAtAction("GetCorreioEletronico", new { ano = correioEletronico.Ano, id = correioEletronico.CodEntidade }, correioEletronico);
 		}
 
 		// DELETE: api/CorreioEletronicoes/5
-		[HttpDelete("{id}")]
-		public async Task<ActionResult<CorreioEletronico>> DeleteCorreioEletronico(long id)
+		[HttpDelete("{ano}/{id}")]
+		public async Task<ActionResult<CorreioEletronico>> DeleteCorreioEletronico(short ano, long id)
 		{
-			var correioEletronico = await _context.CorreioEletronico.FindAsync(id);
+			var correioEletronico = await _context.CorreioEletronico.Where(ce => ce.Ano == ano && ce.CodEntidade == id).FirstAsync();
 			if (correioEletronico == null)
 			{
 				return NotFound();
@@ -113,9 +113,9 @@ namespace API.SQL.Controllers
 			return correioEletronico;
 		}
 
-		private bool CorreioEletronicoExists(long id)
+		private bool CorreioEletronicoExists(short ano, long id)
 		{
-			return _context.CorreioEletronico.Any(e => e.CodEntidade == id);
+			return _context.CorreioEletronico.Any(e => e.CodEntidade == id && e.Ano == ano);
 		}
 	}
 }

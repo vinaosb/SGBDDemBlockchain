@@ -25,11 +25,18 @@ namespace API.SQL.Controllers
 			return await _context.Telefone.ToListAsync();
 		}
 
-		// GET: api/Telefones/5
-		[HttpGet("{id}")]
-		public async Task<ActionResult<Telefone>> GetTelefone(long id)
+		// GET: api/Telefones/2018/101010
+		[HttpGet("{ano}/{id}")]
+		public async Task<ActionResult<IEnumerable<Telefone>>> GetTelefone(short ano, long id)
 		{
-			var telefone = await _context.Telefone.FindAsync(id);
+			return await _context.Telefone.Where(ce => ce.Ano == ano && ce.CodEntidade == id).ToListAsync();
+		}
+
+		// GET: api/Telefones/33333333/2018/101010
+		[HttpGet("{num}/{ano}/{id}")]
+		public async Task<ActionResult<Telefone>> GetTelefone(long num, short ano, long id)
+		{
+			var telefone = await _context.Telefone.Where(ce => ce.Numero == num && ce.Ano == ano && ce.CodEntidade == id).FirstAsync();
 
 			if (telefone == null)
 			{
@@ -39,13 +46,13 @@ namespace API.SQL.Controllers
 			return telefone;
 		}
 
-		// PUT: api/Telefones/5
+		// PUT: api/Telefones/33333333/2018/101010
 		// To protect from overposting attacks, please enable the specific properties you want to bind to, for
 		// more details see https://aka.ms/RazorPagesCRUD.
-		[HttpPut("{id}")]
-		public async Task<IActionResult> PutTelefone(long id, Telefone telefone)
+		[HttpPut("{num}/{ano}/{id}")]
+		public async Task<IActionResult> PutTelefone(long num, short ano, long id, Telefone telefone)
 		{
-			if (id != telefone.Numero)
+			if (id != telefone.CodEntidade || ano != telefone.Ano || num != telefone.Numero)
 			{
 				return BadRequest();
 			}
@@ -58,7 +65,7 @@ namespace API.SQL.Controllers
 			}
 			catch (DbUpdateConcurrencyException)
 			{
-				if (!TelefoneExists(id))
+				if (!TelefoneExists(num,ano,id))
 				{
 					return NotFound();
 				}
@@ -84,7 +91,7 @@ namespace API.SQL.Controllers
 			}
 			catch (DbUpdateException)
 			{
-				if (TelefoneExists(telefone.Numero))
+				if (TelefoneExists(telefone.Numero,telefone.Ano,telefone.CodEntidade))
 				{
 					return Conflict();
 				}
@@ -94,14 +101,14 @@ namespace API.SQL.Controllers
 				}
 			}
 
-			return CreatedAtAction("GetTelefone", new { id = telefone.Numero }, telefone);
+			return CreatedAtAction("GetTelefone", new { num = telefone.Numero, ano = telefone.Ano, id = telefone.CodEntidade }, telefone);
 		}
 
-		// DELETE: api/Telefones/5
-		[HttpDelete("{id}")]
-		public async Task<ActionResult<Telefone>> DeleteTelefone(long id)
+		// DELETE: api/Telefones/33333333/2018/101010
+		[HttpDelete("{num}/{ano}/{id}")]
+		public async Task<ActionResult<Telefone>> DeleteTelefone(long num, short ano, long id)
 		{
-			var telefone = await _context.Telefone.FindAsync(id);
+			var telefone = await _context.Telefone.Where(ce => ce.Numero == num && ce.Ano == ano && ce.CodEntidade == id).FirstAsync();
 			if (telefone == null)
 			{
 				return NotFound();
@@ -113,9 +120,9 @@ namespace API.SQL.Controllers
 			return telefone;
 		}
 
-		private bool TelefoneExists(long id)
+		private bool TelefoneExists(long num, short ano, long id)
 		{
-			return _context.Telefone.Any(e => e.Numero == id);
+			return _context.Telefone.Any(e => e.Numero == num && e.Ano == ano && e.CodEntidade == id);
 		}
 	}
 }

@@ -25,11 +25,11 @@ namespace API.SQL.Controllers
 			return await _context.CensoEscola.ToListAsync();
 		}
 
-		// GET: api/CensoEscolas/5
-		[HttpGet("{id}")]
-		public async Task<ActionResult<CensoEscola>> GetCensoEscola(short id)
+		// GET: api/CensoEscolas/2018/101010
+		[HttpGet("{ano}/{id}")]
+		public async Task<ActionResult<CensoEscola>> GetCensoEscola(short ano, long id)
 		{
-			var censoEscola = await _context.CensoEscola.FindAsync(id);
+			var censoEscola = await _context.CensoEscola.Where(ce => ce.Ano == ano && ce.CodEntidade == id).FirstAsync();
 
 			if (censoEscola == null)
 			{
@@ -39,13 +39,13 @@ namespace API.SQL.Controllers
 			return censoEscola;
 		}
 
-		// PUT: api/CensoEscolas/5
+		// PUT: api/CensoEscolas/2018/101010
 		// To protect from overposting attacks, please enable the specific properties you want to bind to, for
 		// more details see https://aka.ms/RazorPagesCRUD.
-		[HttpPut("{id}")]
-		public async Task<IActionResult> PutCensoEscola(short id, CensoEscola censoEscola)
+		[HttpPut("{ano}/{id}")]
+		public async Task<IActionResult> PutCensoEscola(short ano, long id, CensoEscola censoEscola)
 		{
-			if (id != censoEscola.Ano)
+			if (id != censoEscola.CodEntidade || ano != censoEscola.Ano)
 			{
 				return BadRequest();
 			}
@@ -58,7 +58,7 @@ namespace API.SQL.Controllers
 			}
 			catch (DbUpdateConcurrencyException)
 			{
-				if (!CensoEscolaExists(id))
+				if (!CensoEscolaExists(ano, id))
 				{
 					return NotFound();
 				}
@@ -84,7 +84,7 @@ namespace API.SQL.Controllers
 			}
 			catch (DbUpdateException)
 			{
-				if (CensoEscolaExists(censoEscola.Ano))
+				if (CensoEscolaExists(censoEscola.Ano, censoEscola.CodEntidade))
 				{
 					return Conflict();
 				}
@@ -94,14 +94,14 @@ namespace API.SQL.Controllers
 				}
 			}
 
-			return CreatedAtAction("GetCensoEscola", new { id = censoEscola.Ano }, censoEscola);
+			return CreatedAtAction("GetCensoEscola", new { ano = censoEscola.Ano, id = censoEscola.Ano }, censoEscola);
 		}
 
-		// DELETE: api/CensoEscolas/5
-		[HttpDelete("{id}")]
-		public async Task<ActionResult<CensoEscola>> DeleteCensoEscola(short id)
+		// DELETE: api/CensoEscolas/2019/101010
+		[HttpDelete("{ano}/{id}")]
+		public async Task<ActionResult<CensoEscola>> DeleteCensoEscola(short ano, long id)
 		{
-			var censoEscola = await _context.CensoEscola.FindAsync(id);
+			var censoEscola = await _context.CensoEscola.Where(ce => ce.Ano == ano && ce.CodEntidade == id).FirstAsync();
 			if (censoEscola == null)
 			{
 				return NotFound();
@@ -113,9 +113,9 @@ namespace API.SQL.Controllers
 			return censoEscola;
 		}
 
-		private bool CensoEscolaExists(short id)
+		private bool CensoEscolaExists(short ano, long id)
 		{
-			return _context.CensoEscola.Any(e => e.Ano == id);
+			return _context.CensoEscola.Any(e => e.Ano == ano && e.CodEntidade == id);
 		}
 	}
 }
