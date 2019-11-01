@@ -1,8 +1,10 @@
 ﻿using API.SQL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace API.SQL.Controllers
@@ -11,32 +13,47 @@ namespace API.SQL.Controllers
 	[ApiController]
 	public class MantenedorasDasEscolasController : ControllerBase
 	{
-		private readonly postgresContext _context;
+		private string uri;
 
 		public MantenedorasDasEscolasController()
 		{
-			_context = context;
+			uri = "localhost/api/MantenedorasDasEscolas";
 		}
 
 		// GET: api/MantenedorasDasEscolas
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<MantenedoraDaEscola>>> GetMantenedoraDaEscola()
 		{
-			return await _context.MantenedoraDaEscola.ToListAsync();
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<IEnumerable<MantenedoraDaEscola>> ret = null;
+				var response = await client.GetAsync(uri);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<IEnumerable<MantenedoraDaEscola>>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// GET: api/MantenedorasDasEscolas/5
 		[HttpGet("{id}")]
 		public async Task<ActionResult<MantenedoraDaEscola>> GetMantenedoraDaEscola(long id)
 		{
-			var mantenedoraDaEscola = await _context.MantenedoraDaEscola.FindAsync(id);
-
-			if (mantenedoraDaEscola == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
-			}
+				ActionResult<MantenedoraDaEscola> ret = null;
+				var response = await client.GetAsync(uri + id);
 
-			return mantenedoraDaEscola;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<MantenedoraDaEscola>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// PUT: api/MantenedorasDasEscolas/5
@@ -45,30 +62,19 @@ namespace API.SQL.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> PutMantenedoraDaEscola(long id, MantenedoraDaEscola mantenedoraDaEscola)
 		{
-			if (id != mantenedoraDaEscola.CodEntidade)
+			using (HttpClient client = new HttpClient())
 			{
-				return BadRequest();
-			}
+				IActionResult ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(mantenedoraDaEscola));
+				var response = await client.PutAsync(uri + id, cont);
 
-			_context.Entry(mantenedoraDaEscola).State = EntityState.Modified;
-
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!MantenedoraDaEscolaExists(id))
+				if (response.IsSuccessStatusCode)
 				{
-					return NotFound();
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<IActionResult>(t);
 				}
-				else
-				{
-					throw;
-				}
+				return ret;
 			}
-
-			return NoContent();
 		}
 
 		// POST: api/MantenedorasDasEscolas
@@ -77,45 +83,37 @@ namespace API.SQL.Controllers
 		[HttpPost]
 		public async Task<ActionResult<MantenedoraDaEscola>> PostMantenedoraDaEscola(MantenedoraDaEscola mantenedoraDaEscola)
 		{
-			_context.MantenedoraDaEscola.Add(mantenedoraDaEscola);
-			try
+			using (HttpClient client = new HttpClient())
 			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateException)
-			{
-				if (MantenedoraDaEscolaExists(mantenedoraDaEscola.CodEntidade))
-				{
-					return Conflict();
-				}
-				else
-				{
-					throw;
-				}
-			}
+				ActionResult<MantenedoraDaEscola> ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(mantenedoraDaEscola));
+				var response = await client.PostAsync(uri, cont);
 
-			return CreatedAtAction("GetMantenedoraDaEscola", new { id = mantenedoraDaEscola.CodEntidade }, mantenedoraDaEscola);
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<MantenedoraDaEscola>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// DELETE: api/MantenedorasDasEscolas/5
 		[HttpDelete("{id}")]
 		public async Task<ActionResult<MantenedoraDaEscola>> DeleteMantenedoraDaEscola(long id)
 		{
-			var mantenedoraDaEscola = await _context.MantenedoraDaEscola.FindAsync(id);
-			if (mantenedoraDaEscola == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
+				ActionResult<MantenedoraDaEscola> ret = null;
+				var response = await client.DeleteAsync(uri + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<MantenedoraDaEscola>>(t);
+				}
+				return ret;
 			}
-
-			_context.MantenedoraDaEscola.Remove(mantenedoraDaEscola);
-			await _context.SaveChangesAsync();
-
-			return mantenedoraDaEscola;
-		}
-
-		private bool MantenedoraDaEscolaExists(long id)
-		{
-			return _context.MantenedoraDaEscola.Any(e => e.CodEntidade == id);
 		}
 	}
 }

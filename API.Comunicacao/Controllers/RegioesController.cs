@@ -1,8 +1,10 @@
 ﻿using API.SQL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace API.SQL.Controllers
@@ -11,32 +13,46 @@ namespace API.SQL.Controllers
 	[ApiController]
 	public class RegioesController : ControllerBase
 	{
-		private readonly postgresContext _context;
-
+		private string uri;
 		public RegioesController()
 		{
-			_context = context;
+			uri = "localhost/api/Regioes";
 		}
 
 		// GET: api/Regioes
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Regiao>>> GetRegiao()
 		{
-			return await _context.Regiao.ToListAsync();
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<IEnumerable<Regiao>> ret = null;
+				var response = await client.GetAsync(uri);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<IEnumerable<Regiao>>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// GET: api/Regioes/5
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Regiao>> GetRegiao(long id)
 		{
-			var regiao = await _context.Regiao.FindAsync(id);
-
-			if (regiao == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
-			}
+				ActionResult<Regiao> ret = null;
+				var response = await client.GetAsync(uri + id);
 
-			return regiao;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Regiao>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// PUT: api/Regioes/5
@@ -45,30 +61,19 @@ namespace API.SQL.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> PutRegiao(long id, Regiao regiao)
 		{
-			if (id != regiao.CodRegiao)
+			using (HttpClient client = new HttpClient())
 			{
-				return BadRequest();
-			}
+				IActionResult ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(regiao));
+				var response = await client.PutAsync(uri + id, cont);
 
-			_context.Entry(regiao).State = EntityState.Modified;
-
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!RegiaoExists(id))
+				if (response.IsSuccessStatusCode)
 				{
-					return NotFound();
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<IActionResult>(t);
 				}
-				else
-				{
-					throw;
-				}
+				return ret;
 			}
-
-			return NoContent();
 		}
 
 		// POST: api/Regioes
@@ -77,45 +82,37 @@ namespace API.SQL.Controllers
 		[HttpPost]
 		public async Task<ActionResult<Regiao>> PostRegiao(Regiao regiao)
 		{
-			_context.Regiao.Add(regiao);
-			try
+			using (HttpClient client = new HttpClient())
 			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateException)
-			{
-				if (RegiaoExists(regiao.CodRegiao))
-				{
-					return Conflict();
-				}
-				else
-				{
-					throw;
-				}
-			}
+				ActionResult<Regiao> ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(regiao));
+				var response = await client.PostAsync(uri, cont);
 
-			return CreatedAtAction("GetRegiao", new { id = regiao.CodRegiao }, regiao);
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Regiao>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// DELETE: api/Regioes/5
 		[HttpDelete("{id}")]
 		public async Task<ActionResult<Regiao>> DeleteRegiao(long id)
 		{
-			var regiao = await _context.Regiao.FindAsync(id);
-			if (regiao == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
+				ActionResult<Regiao> ret = null;
+				var response = await client.DeleteAsync(uri + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Regiao>>(t);
+				}
+				return ret;
 			}
-
-			_context.Regiao.Remove(regiao);
-			await _context.SaveChangesAsync();
-
-			return regiao;
-		}
-
-		private bool RegiaoExists(long id)
-		{
-			return _context.Regiao.Any(e => e.CodRegiao == id);
 		}
 	}
 }

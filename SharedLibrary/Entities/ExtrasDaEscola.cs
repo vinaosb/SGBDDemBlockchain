@@ -40,7 +40,7 @@ namespace SharedLibrary.Entities.Custom
 		}
 		public class Indexer
 		{
-			public int Cod_Entidade { get; set; }
+			public long Cod_Entidade { get; set; }
 			public short Ano { get; set; }
 		}
 

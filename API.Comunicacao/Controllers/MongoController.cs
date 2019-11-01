@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SharedLibrary.Context.Custom;
 using SharedLibrary.Entities.Custom;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 using static SharedLibrary.Entities.Custom.ExtrasDaEscola;
 
 namespace API.Mongo.Controllers
@@ -10,62 +13,98 @@ namespace API.Mongo.Controllers
 	[ApiController]
 	public class MongoController : ControllerBase
 	{
-		public readonly ExtrasDaEscolaContext _extrasContext;
+		private string uri;
 
 		public MongoController(ExtrasDaEscolaContext context)
 		{
-			_extrasContext = context;
+			uri = "localhost/api/Mongo";
 		}
 
 		[HttpGet]
-		public ActionResult<List<ExtrasDaEscola>> Get() =>
-			_extrasContext.Get();
-
-		[HttpGet("id:{a:1,b:2}", Name = "GetExtra")]
-		public ActionResult<ExtrasDaEscola> Get(Indexer id)
+		public async Task<ActionResult<List<ExtrasDaEscola>>> GetExtraAsync()
 		{
-			var extra = _extrasContext.Get(id);
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<List<ExtrasDaEscola>> ret = null;
+				var response = await client.GetAsync(uri);
 
-			if (extra == null)
-				return NotFound();
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<List<ExtrasDaEscola>>>(t);
+				}
+				return ret;
+			}
+		}
 
-			return extra;
+		[HttpGet("{ano}/{cod}")]
+		public async Task<ActionResult<ExtrasDaEscola>> GetExtra(short ano, long id)
+		{
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<ExtrasDaEscola> ret = null;
+				var response = await client.GetAsync(uri + "/" + ano + "/" + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<ExtrasDaEscola>>(t);
+				}
+				return ret;
+			}
 		}
 
 		[HttpPost]
-		public ActionResult<ExtrasDaEscola> Create(ExtrasDaEscola extra)
+		public async Task<ActionResult<ExtrasDaEscola>> PostExtra(ExtrasDaEscola extra)
 		{
-			_extrasContext.Upsert(extra.ID, extra);
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<ExtrasDaEscola> ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(extra));
+				var response = await client.PostAsync(uri, cont);
 
-			return CreatedAtRoute("GetExtra", new { id = extra.ID, extra });
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<ExtrasDaEscola>>(t);
+				}
+				return ret;
+			}
 		}
 
 		[HttpPut]
-		public IActionResult Update(ExtrasDaEscola extra)
+		public async Task<IActionResult> PutExtra(ExtrasDaEscola extra)
 		{
-			var ex = _extrasContext.Get(extra.ID);
-
-			if (ex == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
+				IActionResult ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(extra));
+				var response = await client.PutAsync(uri, cont);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<IActionResult>(t);
+				}
+				return ret;
 			}
-
-			_extrasContext.Upsert(extra.ID, extra);
-
-			return NoContent();
 		}
 
 		[HttpDelete]
-		public IActionResult Delete(Indexer id)
+		public async Task<IActionResult> DeleteExtra(short ano, long id)
 		{
-			var extra = _extrasContext.Get(id);
+			using (HttpClient client = new HttpClient())
+			{
+				IActionResult ret = null;
+				var response = await client.DeleteAsync(uri + "/" + ano + "/" + id);
 
-			if (extra == null)
-				return NotFound();
-
-			_extrasContext.Remove(extra.ID);
-
-			return NoContent();
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<IActionResult>(t);
+				}
+				return ret;
+			}
 		}
 	}
 }

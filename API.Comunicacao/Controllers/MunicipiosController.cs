@@ -1,8 +1,10 @@
 ﻿using API.SQL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace API.SQL.Controllers
@@ -11,32 +13,46 @@ namespace API.SQL.Controllers
 	[ApiController]
 	public class MunicipiosController : ControllerBase
 	{
-		private readonly postgresContext _context;
-
+		private string uri;
 		public MunicipiosController()
 		{
-			_context = context;
+			uri = "localhost/api/Municipios";
 		}
 
 		// GET: api/Municipios
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Municipio>>> GetMunicipio()
 		{
-			return await _context.Municipio.ToListAsync();
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<IEnumerable<Municipio>> ret = null;
+				var response = await client.GetAsync(uri);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<IEnumerable<Municipio>>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// GET: api/Municipios/5
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Municipio>> GetMunicipio(long id)
 		{
-			var municipio = await _context.Municipio.FindAsync(id);
-
-			if (municipio == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
-			}
+				ActionResult<Municipio> ret = null;
+				var response = await client.GetAsync(uri + id);
 
-			return municipio;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Municipio>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// PUT: api/Municipios/5
@@ -45,30 +61,19 @@ namespace API.SQL.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> PutMunicipio(long id, Municipio municipio)
 		{
-			if (id != municipio.CodMunicipio)
+			using (HttpClient client = new HttpClient())
 			{
-				return BadRequest();
-			}
+				IActionResult ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(municipio));
+				var response = await client.PutAsync(uri + id, cont);
 
-			_context.Entry(municipio).State = EntityState.Modified;
-
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!MunicipioExists(id))
+				if (response.IsSuccessStatusCode)
 				{
-					return NotFound();
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<IActionResult>(t);
 				}
-				else
-				{
-					throw;
-				}
+				return ret;
 			}
-
-			return NoContent();
 		}
 
 		// POST: api/Municipios
@@ -77,45 +82,37 @@ namespace API.SQL.Controllers
 		[HttpPost]
 		public async Task<ActionResult<Municipio>> PostMunicipio(Municipio municipio)
 		{
-			_context.Municipio.Add(municipio);
-			try
+			using (HttpClient client = new HttpClient())
 			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateException)
-			{
-				if (MunicipioExists(municipio.CodMunicipio))
-				{
-					return Conflict();
-				}
-				else
-				{
-					throw;
-				}
-			}
+				ActionResult<Municipio> ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(municipio));
+				var response = await client.PostAsync(uri, cont);
 
-			return CreatedAtAction("GetMunicipio", new { id = municipio.CodMunicipio }, municipio);
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Municipio>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// DELETE: api/Municipios/5
 		[HttpDelete("{id}")]
 		public async Task<ActionResult<Municipio>> DeleteMunicipio(long id)
 		{
-			var municipio = await _context.Municipio.FindAsync(id);
-			if (municipio == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
+				ActionResult<Municipio> ret = null;
+				var response = await client.DeleteAsync(uri + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Municipio>>(t);
+				}
+				return ret;
 			}
-
-			_context.Municipio.Remove(municipio);
-			await _context.SaveChangesAsync();
-
-			return municipio;
-		}
-
-		private bool MunicipioExists(long id)
-		{
-			return _context.Municipio.Any(e => e.CodMunicipio == id);
 		}
 	}
 }

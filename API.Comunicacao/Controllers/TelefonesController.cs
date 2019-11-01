@@ -1,8 +1,10 @@
 ﻿using API.SQL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace API.SQL.Controllers
@@ -11,39 +13,64 @@ namespace API.SQL.Controllers
 	[ApiController]
 	public class TelefonesController : ControllerBase
 	{
-		private readonly postgresContext _context;
-
+		private string uri;
 		public TelefonesController()
 		{
-			_context = context;
+			uri = "localhost/api/CensoEscolas";
 		}
 
 		// GET: api/Telefones
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Telefone>>> GetTelefone()
 		{
-			return await _context.Telefone.ToListAsync();
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<IEnumerable<Telefone>> ret = null;
+				var response = await client.GetAsync(uri);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<IEnumerable<Telefone>>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// GET: api/Telefones/2018/101010
 		[HttpGet("{ano}/{id}")]
 		public async Task<ActionResult<IEnumerable<Telefone>>> GetTelefone(short ano, long id)
 		{
-			return await _context.Telefone.Where(ce => ce.Ano == ano && ce.CodEntidade == id).ToListAsync();
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<IEnumerable<Telefone>> ret = null;
+				var response = await client.GetAsync(uri + "/" + ano + "/" + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<IEnumerable<Telefone>>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// GET: api/Telefones/33333333/2018/101010
 		[HttpGet("{num}/{ano}/{id}")]
 		public async Task<ActionResult<Telefone>> GetTelefone(long num, short ano, long id)
 		{
-			var telefone = await _context.Telefone.Where(ce => ce.Numero == num && ce.Ano == ano && ce.CodEntidade == id).FirstAsync();
-
-			if (telefone == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
-			}
+				ActionResult<Telefone> ret = null;
+				var response = await client.GetAsync(uri + "/" + num + "/" + ano + "/" + id);
 
-			return telefone;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Telefone>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// PUT: api/Telefones/33333333/2018/101010
@@ -52,30 +79,19 @@ namespace API.SQL.Controllers
 		[HttpPut("{num}/{ano}/{id}")]
 		public async Task<IActionResult> PutTelefone(long num, short ano, long id, Telefone telefone)
 		{
-			if (id != telefone.CodEntidade || ano != telefone.Ano || num != telefone.Numero)
+			using (HttpClient client = new HttpClient())
 			{
-				return BadRequest();
-			}
+				IActionResult ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(telefone));
+				var response = await client.PutAsync(uri + "/" + num + "/" + ano + "/" + id, cont);
 
-			_context.Entry(telefone).State = EntityState.Modified;
-
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!TelefoneExists(num, ano, id))
+				if (response.IsSuccessStatusCode)
 				{
-					return NotFound();
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<IActionResult>(t);
 				}
-				else
-				{
-					throw;
-				}
+				return ret;
 			}
-
-			return NoContent();
 		}
 
 		// POST: api/Telefones
@@ -84,45 +100,37 @@ namespace API.SQL.Controllers
 		[HttpPost]
 		public async Task<ActionResult<Telefone>> PostTelefone(Telefone telefone)
 		{
-			_context.Telefone.Add(telefone);
-			try
+			using (HttpClient client = new HttpClient())
 			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateException)
-			{
-				if (TelefoneExists(telefone.Numero, telefone.Ano, telefone.CodEntidade))
-				{
-					return Conflict();
-				}
-				else
-				{
-					throw;
-				}
-			}
+				ActionResult<Telefone> ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(telefone));
+				var response = await client.PostAsync(uri + "/", cont);
 
-			return CreatedAtAction("GetTelefone", new { num = telefone.Numero, ano = telefone.Ano, id = telefone.CodEntidade }, telefone);
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Telefone>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// DELETE: api/Telefones/33333333/2018/101010
 		[HttpDelete("{num}/{ano}/{id}")]
 		public async Task<ActionResult<Telefone>> DeleteTelefone(long num, short ano, long id)
 		{
-			var telefone = await _context.Telefone.Where(ce => ce.Numero == num && ce.Ano == ano && ce.CodEntidade == id).FirstAsync();
-			if (telefone == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
+				ActionResult<Telefone> ret = null;
+				var response = await client.DeleteAsync(uri + "/" + num + "/" + ano + "/" + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Telefone>>(t);
+				}
+				return ret;
 			}
-
-			_context.Telefone.Remove(telefone);
-			await _context.SaveChangesAsync();
-
-			return telefone;
-		}
-
-		private bool TelefoneExists(long num, short ano, long id)
-		{
-			return _context.Telefone.Any(e => e.Numero == num && e.Ano == ano && e.CodEntidade == id);
 		}
 	}
 }

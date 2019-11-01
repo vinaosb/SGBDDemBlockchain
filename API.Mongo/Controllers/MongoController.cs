@@ -2,6 +2,7 @@
 using SharedLibrary.Context.Custom;
 using SharedLibrary.Entities.Custom;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using static SharedLibrary.Entities.Custom.ExtrasDaEscola;
 
 namespace API.Mongo.Controllers
@@ -21,10 +22,11 @@ namespace API.Mongo.Controllers
 		public ActionResult<List<ExtrasDaEscola>> Get() =>
 			_extrasContext.Get();
 
-		[HttpGet("id:{a:1,b:2}", Name = "GetExtra")]
-		public ActionResult<ExtrasDaEscola> Get(Indexer id)
+		[HttpGet("{ano}/{cod}")]
+		public ActionResult<ExtrasDaEscola> GetExtra(short ano, long id)
 		{
-			var extra = _extrasContext.Get(id);
+			Indexer ind = new Indexer { Ano = ano, Cod_Entidade = id };
+			var extra = _extrasContext.Get(ind);
 
 			if (extra == null)
 				return NotFound();
@@ -33,7 +35,7 @@ namespace API.Mongo.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult<ExtrasDaEscola> Create(ExtrasDaEscola extra)
+		public ActionResult<ExtrasDaEscola> PostExtra(ExtrasDaEscola extra)
 		{
 			_extrasContext.Upsert(extra.ID, extra);
 
@@ -41,7 +43,7 @@ namespace API.Mongo.Controllers
 		}
 
 		[HttpPut]
-		public IActionResult Update(ExtrasDaEscola extra)
+		public IActionResult PutExtra(ExtrasDaEscola extra)
 		{
 			var ex = _extrasContext.Get(extra.ID);
 
@@ -55,10 +57,11 @@ namespace API.Mongo.Controllers
 			return NoContent();
 		}
 
-		[HttpDelete]
-		public IActionResult Delete(Indexer id)
+		[HttpDelete("{ano}/{cod}")]
+		public IActionResult DeleteExtra(short ano, long id)
 		{
-			var extra = _extrasContext.Get(id);
+			Indexer ind = new Indexer { Ano = ano, Cod_Entidade = id };
+			var extra = _extrasContext.Get(ind);
 
 			if (extra == null)
 				return NotFound();
