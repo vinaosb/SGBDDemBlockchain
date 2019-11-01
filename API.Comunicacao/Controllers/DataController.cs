@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace API.Blockchain.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/Comm/[controller]")]
 	[ApiController]
 	public class DataController : ControllerBase
 	{

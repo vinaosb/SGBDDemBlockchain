@@ -1,38 +1,51 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Nethereum.Contracts;
+using Newtonsoft.Json;
 using SharedLibrary.BlockchainToBD;
 using SharedLibrary.BlockchainToBD.ContractDefinition;
-using System.Linq;
+using System.Net.Http;
 using System.Numerics;
 using System.Threading.Tasks;
 
 namespace API.Blockchain.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/Comm/[controller]")]
 	[ApiController]
 	public class AttributesController : ControllerBase
 	{
-		public BlockchainToBDService Service { get; set; }
+		private string uri;
 		public AttributesController(BlockchainToBDService service)
 		{
-			Service = service;
+			uri = "localhost/api/Attributes";
 		}
 
 		// POST: api/Attributes
 		[HttpPost]
 		public async Task<BigInteger> Post(AddAttributeFunction att)
 		{
-			var receipt = await Service.AddAttributeRequestAndWaitForReceiptAsync(att);
-			var attEvent = receipt.DecodeAllEvents<AttAddedEventDTO>();
+			using (HttpClient client = new HttpClient())
+			{
+				BigInteger ret = 0;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(att));
+				var response = await client.PostAsync(uri + "/", cont);
 
-			return attEvent.LastOrDefault().Event.AttId;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<BigInteger>(t);
+				}
+				return ret;
+			}
 		}
 
 		// PUT: api/Attributes/5
-		[HttpPut("{id}")]
+		[HttpPut]
 		public async Task Put(LinkDataToAttFunction linker)
 		{
-			var _ = await Service.LinkDataToAttRequestAndWaitForReceiptAsync(linker);
+			using (HttpClient client = new HttpClient())
+			{
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(linker));
+				var response = await client.PutAsync(uri + "/", cont);
+			}
 		}
 
 	}

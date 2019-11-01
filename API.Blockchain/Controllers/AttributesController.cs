@@ -30,7 +30,7 @@ namespace API.Blockchain.Controllers
 		}
 
 		// PUT: api/Attributes/5
-		[HttpPut("{id}")]
+		[HttpPut]
 		public async Task Put(LinkDataToAttFunction linker)
 		{
 			var _ = await Service.LinkDataToAttRequestAndWaitForReceiptAsync(linker);

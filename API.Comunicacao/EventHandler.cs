@@ -9,7 +9,10 @@ namespace API.Comunicacao
 	{
 		public Task DataModifiedEventHandler(Dictionary<uint, HashSet<ulong>> dbAndTables, Dictionary<ulong, HashSet<BigInteger>> tableAndData, Dictionary<BigInteger, (byte[], byte[])> dataAndHashs)
 		{
-			throw new NotImplementedException();
+			if (Globals.dbAndTables.Count != dbAndTables)
+			{
+
+			}
 		}
 
 		public Task DataDeletedEventHandler(Dictionary<uint, HashSet<ulong>> dbAndTables, Dictionary<ulong, HashSet<BigInteger>> tableAndData)
