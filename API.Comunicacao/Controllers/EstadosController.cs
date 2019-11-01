@@ -1,8 +1,10 @@
 ﻿using API.SQL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace API.SQL.Controllers
@@ -11,32 +13,47 @@ namespace API.SQL.Controllers
 	[ApiController]
 	public class EstadosController : ControllerBase
 	{
-		private readonly postgresContext _context;
+		private string uri;
 
-		public EstadosController(postgresContext context)
+		public EstadosController()
 		{
-			_context = context;
+			uri = "localhost/api/Estados";
 		}
 
 		// GET: api/Estados
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Estado>>> GetEstado()
 		{
-			return await _context.Estado.ToListAsync();
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<IEnumerable<Estado>> ret = null;
+				var response = await client.GetAsync(uri);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<IEnumerable<Estado>>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// GET: api/Estados/5
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Estado>> GetEstado(long id)
 		{
-			var estado = await _context.Estado.FindAsync(id);
-
-			if (estado == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
-			}
+				ActionResult<Estado> ret = null;
+				var response = await client.GetAsync(uri + id);
 
-			return estado;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Estado>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// PUT: api/Estados/5
@@ -45,30 +62,19 @@ namespace API.SQL.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> PutEstado(long id, Estado estado)
 		{
-			if (id != estado.CodEstado)
+			using (HttpClient client = new HttpClient())
 			{
-				return BadRequest();
-			}
+				IActionResult ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(estado));
+				var response = await client.PutAsync(uri + id, cont);
 
-			_context.Entry(estado).State = EntityState.Modified;
-
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!EstadoExists(id))
+				if (response.IsSuccessStatusCode)
 				{
-					return NotFound();
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<IActionResult>(t);
 				}
-				else
-				{
-					throw;
-				}
+				return ret;
 			}
-
-			return NoContent();
 		}
 
 		// POST: api/Estados
@@ -77,45 +83,37 @@ namespace API.SQL.Controllers
 		[HttpPost]
 		public async Task<ActionResult<Estado>> PostEstado(Estado estado)
 		{
-			_context.Estado.Add(estado);
-			try
+			using (HttpClient client = new HttpClient())
 			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateException)
-			{
-				if (EstadoExists(estado.CodEstado))
-				{
-					return Conflict();
-				}
-				else
-				{
-					throw;
-				}
-			}
+				ActionResult<Estado> ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(estado));
+				var response = await client.PostAsync(uri, cont);
 
-			return CreatedAtAction("GetEstado", new { id = estado.CodEstado }, estado);
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Estado>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// DELETE: api/Estados/5
 		[HttpDelete("{id}")]
 		public async Task<ActionResult<Estado>> DeleteEstado(long id)
 		{
-			var estado = await _context.Estado.FindAsync(id);
-			if (estado == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
+				ActionResult<Estado> ret = null;
+				var response = await client.DeleteAsync(uri + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Estado>>(t);
+				}
+				return ret;
 			}
-
-			_context.Estado.Remove(estado);
-			await _context.SaveChangesAsync();
-
-			return estado;
-		}
-
-		private bool EstadoExists(long id)
-		{
-			return _context.Estado.Any(e => e.CodEstado == id);
 		}
 	}
 }

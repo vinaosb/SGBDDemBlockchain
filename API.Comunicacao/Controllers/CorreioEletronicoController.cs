@@ -1,8 +1,8 @@
 ﻿using API.SQL.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace API.SQL.Controllers
@@ -11,32 +11,46 @@ namespace API.SQL.Controllers
 	[ApiController]
 	public class CorreioEletronicoController : ControllerBase
 	{
-		private readonly postgresContext _context;
-
-		public CorreioEletronicoController(postgresContext context)
+		private string uri;
+		public CorreioEletronicoController()
 		{
-			_context = context;
+			uri = "localhost/api/CorreioEletronico";
 		}
 
 		// GET: api/CorreioEletronicoes
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<CorreioEletronico>>> GetCorreioEletronico()
 		{
-			return await _context.CorreioEletronico.ToListAsync();
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<IEnumerable<CorreioEletronico>> ret = null;
+				var response = await client.GetAsync(uri);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<IEnumerable<CorreioEletronico>>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// GET: api/CorreioEletronicoes/5
 		[HttpGet("{ano}/{id}")]
 		public async Task<ActionResult<CorreioEletronico>> GetCorreioEletronico(short ano, long id)
 		{
-			var correioEletronico = await _context.CorreioEletronico.Where(ce => ce.Ano == ano && ce.CodEntidade == id).FirstAsync();
-
-			if (correioEletronico == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
-			}
+				ActionResult<CorreioEletronico> ret = null;
+				var response = await client.GetAsync(uri + "/" + ano + "/" + id);
 
-			return correioEletronico;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<CorreioEletronico>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// PUT: api/CorreioEletronicoes/5
@@ -45,30 +59,19 @@ namespace API.SQL.Controllers
 		[HttpPut("{ano}/{id}")]
 		public async Task<IActionResult> PutCorreioEletronico(short ano, long id, CorreioEletronico correioEletronico)
 		{
-			if (id != correioEletronico.CodEntidade || ano != correioEletronico.Ano)
+			using (HttpClient client = new HttpClient())
 			{
-				return BadRequest();
-			}
+				IActionResult ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(correioEletronico));
+				var response = await client.PutAsync(uri + "/" + ano + "/" + id, cont);
 
-			_context.Entry(correioEletronico).State = EntityState.Modified;
-
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!CorreioEletronicoExists(ano,id))
+				if (response.IsSuccessStatusCode)
 				{
-					return NotFound();
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<IActionResult>(t);
 				}
-				else
-				{
-					throw;
-				}
+				return ret;
 			}
-
-			return NoContent();
 		}
 
 		// POST: api/CorreioEletronicoes
@@ -77,45 +80,37 @@ namespace API.SQL.Controllers
 		[HttpPost]
 		public async Task<ActionResult<CorreioEletronico>> PostCorreioEletronico(CorreioEletronico correioEletronico)
 		{
-			_context.CorreioEletronico.Add(correioEletronico);
-			try
+			using (HttpClient client = new HttpClient())
 			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateException)
-			{
-				if (CorreioEletronicoExists(correioEletronico.Ano,correioEletronico.CodEntidade))
-				{
-					return Conflict();
-				}
-				else
-				{
-					throw;
-				}
-			}
+				ActionResult<CorreioEletronico> ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(correioEletronico));
+				var response = await client.PostAsync(uri, cont);
 
-			return CreatedAtAction("GetCorreioEletronico", new { ano = correioEletronico.Ano, id = correioEletronico.CodEntidade }, correioEletronico);
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<CorreioEletronico>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// DELETE: api/CorreioEletronicoes/5
 		[HttpDelete("{ano}/{id}")]
 		public async Task<ActionResult<CorreioEletronico>> DeleteCorreioEletronico(short ano, long id)
 		{
-			var correioEletronico = await _context.CorreioEletronico.Where(ce => ce.Ano == ano && ce.CodEntidade == id).FirstAsync();
-			if (correioEletronico == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
+				ActionResult<CorreioEletronico> ret = null;
+				var response = await client.DeleteAsync(uri + "/" + ano + "/" + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<CorreioEletronico>>(t);
+				}
+				return ret;
 			}
-
-			_context.CorreioEletronico.Remove(correioEletronico);
-			await _context.SaveChangesAsync();
-
-			return correioEletronico;
-		}
-
-		private bool CorreioEletronicoExists(short ano, long id)
-		{
-			return _context.CorreioEletronico.Any(e => e.CodEntidade == id && e.Ano == ano);
 		}
 	}
 }

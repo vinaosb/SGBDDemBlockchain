@@ -1,8 +1,8 @@
 ﻿using API.SQL.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace API.SQL.Controllers
@@ -11,32 +11,46 @@ namespace API.SQL.Controllers
 	[ApiController]
 	public class EnderecosController : ControllerBase
 	{
-		private readonly postgresContext _context;
-
-		public EnderecosController(postgresContext context)
+		private string uri;
+		public EnderecosController()
 		{
-			_context = context;
+			uri = "localhost/api/Enderecos";
 		}
 
 		// GET: api/Enderecoes
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Endereco>>> GetEndereco()
 		{
-			return await _context.Endereco.ToListAsync();
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<IEnumerable<Endereco>> ret = null;
+				var response = await client.GetAsync(uri);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<IEnumerable<Endereco>>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// GET: api/Enderecoes/5
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Endereco>> GetEndereco(long id)
 		{
-			var endereco = await _context.Endereco.FindAsync(id);
-
-			if (endereco == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
-			}
+				ActionResult<Endereco> ret = null;
+				var response = await client.GetAsync(uri + id);
 
-			return endereco;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Endereco>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// PUT: api/Enderecoes/5
@@ -45,30 +59,19 @@ namespace API.SQL.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> PutEndereco(long id, Endereco endereco)
 		{
-			if (id != endereco.CodEndereco)
+			using (HttpClient client = new HttpClient())
 			{
-				return BadRequest();
-			}
+				IActionResult ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(endereco));
+				var response = await client.PutAsync(uri + id, cont);
 
-			_context.Entry(endereco).State = EntityState.Modified;
-
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!EnderecoExists(id))
+				if (response.IsSuccessStatusCode)
 				{
-					return NotFound();
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<IActionResult>(t);
 				}
-				else
-				{
-					throw;
-				}
+				return ret;
 			}
-
-			return NoContent();
 		}
 
 		// POST: api/Enderecoes
@@ -77,45 +80,37 @@ namespace API.SQL.Controllers
 		[HttpPost]
 		public async Task<ActionResult<Endereco>> PostEndereco(Endereco endereco)
 		{
-			_context.Endereco.Add(endereco);
-			try
+			using (HttpClient client = new HttpClient())
 			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateException)
-			{
-				if (EnderecoExists(endereco.CodEndereco))
-				{
-					return Conflict();
-				}
-				else
-				{
-					throw;
-				}
-			}
+				ActionResult<Endereco> ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(endereco));
+				var response = await client.PostAsync(uri, cont);
 
-			return CreatedAtAction("GetEndereco", new { id = endereco.CodEndereco }, endereco);
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Endereco>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// DELETE: api/Enderecoes/5
 		[HttpDelete("{id}")]
 		public async Task<ActionResult<Endereco>> DeleteEndereco(long id)
 		{
-			var endereco = await _context.Endereco.FindAsync(id);
-			if (endereco == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
+				ActionResult<Endereco> ret = null;
+				var response = await client.DeleteAsync(uri + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Endereco>>(t);
+				}
+				return ret;
 			}
-
-			_context.Endereco.Remove(endereco);
-			await _context.SaveChangesAsync();
-
-			return endereco;
-		}
-
-		private bool EnderecoExists(long id)
-		{
-			return _context.Endereco.Any(e => e.CodEndereco == id);
 		}
 	}
 }

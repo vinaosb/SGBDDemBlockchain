@@ -1,8 +1,10 @@
 ﻿using API.SQL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace API.SQL.Controllers
@@ -11,32 +13,46 @@ namespace API.SQL.Controllers
 	[ApiController]
 	public class EscolasController : ControllerBase
 	{
-		private readonly postgresContext _context;
-
-		public EscolasController(postgresContext context)
+		private string uri;
+		public EscolasController()
 		{
-			_context = context;
+			uri = "localhost/api/Esderecos";
 		}
 
 		// GET: api/Escolas
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Escola>>> GetEscola()
 		{
-			return await _context.Escola.ToListAsync();
+			using (HttpClient client = new HttpClient())
+			{
+				ActionResult<IEnumerable<Escola>> ret = null;
+				var response = await client.GetAsync(uri);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<IEnumerable<Escola>>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// GET: api/Escolas/5
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Escola>> GetEscola(long id)
 		{
-			var escola = await _context.Escola.FindAsync(id);
-
-			if (escola == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
-			}
+				ActionResult<Escola> ret = null;
+				var response = await client.GetAsync(uri + id);
 
-			return escola;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Escola>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// PUT: api/Escolas/5
@@ -45,30 +61,19 @@ namespace API.SQL.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> PutEscola(long id, Escola escola)
 		{
-			if (id != escola.CodEntidade)
+			using (HttpClient client = new HttpClient())
 			{
-				return BadRequest();
-			}
+				IActionResult ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(escola));
+				var response = await client.PutAsync(uri + id, cont);
 
-			_context.Entry(escola).State = EntityState.Modified;
-
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!EscolaExists(id))
+				if (response.IsSuccessStatusCode)
 				{
-					return NotFound();
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<IActionResult>(t);
 				}
-				else
-				{
-					throw;
-				}
+				return ret;
 			}
-
-			return NoContent();
 		}
 
 		// POST: api/Escolas
@@ -77,45 +82,37 @@ namespace API.SQL.Controllers
 		[HttpPost]
 		public async Task<ActionResult<Escola>> PostEscola(Escola escola)
 		{
-			_context.Escola.Add(escola);
-			try
+			using (HttpClient client = new HttpClient())
 			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateException)
-			{
-				if (EscolaExists(escola.CodEntidade))
-				{
-					return Conflict();
-				}
-				else
-				{
-					throw;
-				}
-			}
+				ActionResult<Escola> ret = null;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(escola));
+				var response = await client.PostAsync(uri, cont);
 
-			return CreatedAtAction("GetEscola", new { id = escola.CodEntidade }, escola);
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Escola>>(t);
+				}
+				return ret;
+			}
 		}
 
 		// DELETE: api/Escolas/5
 		[HttpDelete("{id}")]
 		public async Task<ActionResult<Escola>> DeleteEscola(long id)
 		{
-			var escola = await _context.Escola.FindAsync(id);
-			if (escola == null)
+			using (HttpClient client = new HttpClient())
 			{
-				return NotFound();
+				ActionResult<Escola> ret = null;
+				var response = await client.DeleteAsync(uri + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ActionResult<Escola>>(t);
+				}
+				return ret;
 			}
-
-			_context.Escola.Remove(escola);
-			await _context.SaveChangesAsync();
-
-			return escola;
-		}
-
-		private bool EscolaExists(long id)
-		{
-			return _context.Escola.Any(e => e.CodEntidade == id);
 		}
 	}
 }

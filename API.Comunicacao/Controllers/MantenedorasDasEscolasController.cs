@@ -13,7 +13,7 @@ namespace API.SQL.Controllers
 	{
 		private readonly postgresContext _context;
 
-		public MantenedorasDasEscolasController(postgresContext context)
+		public MantenedorasDasEscolasController()
 		{
 			_context = context;
 		}

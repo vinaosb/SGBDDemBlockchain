@@ -13,7 +13,7 @@ namespace API.SQL.Controllers
 	{
 		private readonly postgresContext _context;
 
-		public TelefonesController(postgresContext context)
+		public TelefonesController()
 		{
 			_context = context;
 		}
@@ -65,7 +65,7 @@ namespace API.SQL.Controllers
 			}
 			catch (DbUpdateConcurrencyException)
 			{
-				if (!TelefoneExists(num,ano,id))
+				if (!TelefoneExists(num, ano, id))
 				{
 					return NotFound();
 				}
@@ -91,7 +91,7 @@ namespace API.SQL.Controllers
 			}
 			catch (DbUpdateException)
 			{
-				if (TelefoneExists(telefone.Numero,telefone.Ano,telefone.CodEntidade))
+				if (TelefoneExists(telefone.Numero, telefone.Ano, telefone.CodEntidade))
 				{
 					return Conflict();
 				}

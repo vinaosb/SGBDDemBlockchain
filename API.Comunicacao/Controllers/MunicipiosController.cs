@@ -13,7 +13,7 @@ namespace API.SQL.Controllers
 	{
 		private readonly postgresContext _context;
 
-		public MunicipiosController(postgresContext context)
+		public MunicipiosController()
 		{
 			_context = context;
 		}
