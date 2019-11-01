@@ -1,6 +1,6 @@
 using System;
 
-namespace API.Comunicacao
+namespace API.Ethereum
 {
 	public class WeatherForecast
 	{

@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API.Blockchain", "API.Block
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedLibrary", "SharedLibrary\SharedLibrary.csproj", "{4D19842F-9228-415F-A02C-C1168A6C024E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.SQL", "API.SQL\API.SQL.csproj", "{A9F03FB9-BC04-411C-9635-861F5A3A239B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API.SQL", "API.SQL\API.SQL.csproj", "{A9F03FB9-BC04-411C-9635-861F5A3A239B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Mongo", "API.Mongo\API.Mongo.csproj", "{0C6DC749-EC84-41F3-90C3-8335DD946EC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API.Mongo", "API.Mongo\API.Mongo.csproj", "{0C6DC749-EC84-41F3-90C3-8335DD946EC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Comunicacao", "API.Comunicacao\API.Comunicacao.csproj", "{1E50EE8C-A49C-4F8D-B0A8-0AEF9E638C04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API.Comunicacao", "API.Comunicacao\API.Comunicacao.csproj", "{1E50EE8C-A49C-4F8D-B0A8-0AEF9E638C04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -52,6 +52,7 @@ contract BlockchainToBD {
     function addDB(bytes32 IPAddress) public returns (uint32 dbId) {
         dbsAddr[msg.sender] = numDB;
         dbs[numDB].ipAdd = IPAddress;
+		emit DbCreated(numDB, msg.sender);
         return numDB++;
     }
     
@@ -61,11 +62,13 @@ contract BlockchainToBD {
     
     function addTable(uint32 dbId) public returns (uint64 tId) {
         dbs[dbId].tablesInDB[dbs[dbId].numTables].dbs[dbs[dbId].tablesInDB[dbs[dbId].numTables].numDB++] = dbs[dbId];
+		emit TableCreated(numDB, dbs[dbId].numTables, msg.sender);
         return dbs[dbId].numTables++;
     }
     
     function addAttribute() public returns (uint256 AttCode) {
         atts[numAtt].attsId = numAtt;
+		emit AttAdded(numAtt, msg.sender);
         return numAtt++;
     }
     
@@ -141,6 +144,19 @@ contract BlockchainToBD {
         uint32 indexed dbId,
         uint64 tId,
         uint128 dId,
+        address sender
+    );
+    event TableCreated (
+        uint32 indexed dbId,
+        uint64 tId,
+        address sender
+    );
+    event DbCreated (
+        uint32 indexed dbId,
+        address sender
+    );
+    event AttAdded (
+        uint256 indexed attId,
         address sender
     );
     

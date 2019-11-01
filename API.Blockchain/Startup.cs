@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using API.Blockchain;
+using API.Blockchain.BlockchainToBD;
+using API.Blockchain.BlockchainToBD.ContractDefinition;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
 
 namespace SGBDDemBlockchain
 {
@@ -21,10 +19,23 @@ namespace SGBDDemBlockchain
 		}
 
 		public IConfiguration Configuration { get; }
+		public static BlockchainToBDService blockchainService { get; set; }
 
 		// This method gets called by the runtime. Use this method to add services to the container.
-		public void ConfigureServices(IServiceCollection services)
+		public async void ConfigureServices(IServiceCollection services)
 		{
+			var account = new Account(Configuration.GetValue<string>("Ethereum:private"));
+			var web3 = new Web3(account, Configuration.GetValue<string>("Ethereum:url"));
+			var deploymentMessage = new BlockchainToBDDeployment();
+
+			var deploymentHandler = web3.Eth.GetContractDeploymentHandler<BlockchainToBDDeployment>();
+			var transactionReceipt = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
+			var contractAddress = transactionReceipt.ContractAddress;
+
+			blockchainService = new BlockchainToBDService(web3, contractAddress);
+
+			_ = new EventPool(web3);
+
 			services.AddControllers();
 		}
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace API.Comunicacao.Controllers
+namespace API.Ethereum.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]

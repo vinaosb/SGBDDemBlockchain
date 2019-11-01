@@ -6,7 +6,7 @@ using static SharedLibrary.Entities.Custom.ExtrasDaEscola;
 
 namespace API.Mongo.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/Comm/[controller]")]
 	[ApiController]
 	public class MongoController : ControllerBase
 	{

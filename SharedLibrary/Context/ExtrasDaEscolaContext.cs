@@ -1,5 +1,6 @@
 ﻿using MongoDB.Driver;
 using SharedLibrary.Entities.Custom;
+using System;
 using System.Collections.Generic;
 using static SharedLibrary.Entities.Custom.ExtrasDaEscola;
 
@@ -21,7 +22,7 @@ namespace SharedLibrary.Context.Custom
 			_extras.Find(extra => true).ToList();
 		public ExtrasDaEscola Get(Indexer id) =>
 			_extras.Find<ExtrasDaEscola>(extra => extra.ID == id).FirstOrDefault();
-		public void Upsert(ExtrasDaEscola extraNovo) =>
+		public void Upsert(Indexer iD, ExtrasDaEscola extraNovo) =>
 			_extras.ReplaceOne(extra => extra.ID == extraNovo.ID, extraNovo, new UpdateOptions { IsUpsert = true });
 		public void Remove(ExtrasDaEscola extraIn) =>
 			_extras.DeleteOne(extra => extra.ID == extraIn.ID);
