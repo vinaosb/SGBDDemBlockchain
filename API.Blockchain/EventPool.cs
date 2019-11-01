@@ -48,6 +48,7 @@ namespace API.Blockchain
 
 					var loop = dif.Except(log);
 
+					string sender = null;
 					foreach (var item in loop)
 					{
 						dbAndTables.TryAdd(item.Event.DbId, new HashSet<ulong>());
@@ -55,6 +56,7 @@ namespace API.Blockchain
 						tableAndData.TryAdd(item.Event.TId, new HashSet<BigInteger>());
 						tableAndData[item.Event.TId].Add(item.Event.DId);
 						dataAndHashs.TryAdd(item.Event.DId, (item.Event.PrevHash, item.Event.NextHash));
+						sender = item.Event.Sender;
 					}
 					await Handler.DataModifiedEventHandler(dbAndTables, tableAndData, dataAndHashs);
 

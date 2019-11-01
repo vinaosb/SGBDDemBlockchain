@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace API.Mongo.Controllers
+namespace API.Comm.Controllers
 {
 	[Route("api/Comm/[controller]")]
 	[ApiController]
@@ -14,9 +14,9 @@ namespace API.Mongo.Controllers
 	{
 		private string uri;
 
-		public MongoController(ExtrasDaEscolaContext context)
+		public MongoController(string u = "localhost/api/Mongo")
 		{
-			uri = "localhost/api/Mongo";
+			uri = u;
 		}
 
 		[HttpGet]

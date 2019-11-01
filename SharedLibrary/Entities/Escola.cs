@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace API.SQL.Models
 {
@@ -19,6 +20,7 @@ namespace API.SQL.Models
 		public string IdLongitude { get; set; }
 		public string IdLatitude { get; set; }
 		public string InstituicaoSemFimLucrativo { get; set; }
+		public BigInteger? Id { get; set; }
 
 		public virtual Endereco CodEnderecoNavigation { get; set; }
 		public virtual MantenedoraDaEscola MantenedoraDaEscola { get; set; }

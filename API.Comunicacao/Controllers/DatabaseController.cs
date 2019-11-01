@@ -1,38 +1,64 @@
 ﻿
+using API.Comunicacao;
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Contracts;
+using Newtonsoft.Json;
 using SharedLibrary.BlockchainToBD;
 using SharedLibrary.BlockchainToBD.ContractDefinition;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace API.Blockchain.Controllers
+namespace API.Comm.Controllers
 {
 	[Route("api/Comm/[controller]")]
 	[ApiController]
 	public class DatabaseController : ControllerBase
 	{
-		public BlockchainToBDService Service { get; set; }
-		public DatabaseController(BlockchainToBDService service)
+		private string uri;
+		public DatabaseController(string u = "localhost/api/Database")
 		{
-			Service = service;
+			uri = u;
 		}
 
 		// GET: api/DataBase/5
 		[HttpGet("{id}")]
 		public async Task<byte[]> Get(string id)
 		{
-			return await Service.GetIPAddrQueryAsync(id);
+			using (HttpClient client = new HttpClient())
+			{
+				byte[] ret;
+				StringContent cont = new StringContent(id);
+				var response = await client.GetAsync(uri + "/" + id);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<byte[]>(t);
+					return ret;
+				}
+				return null;
+			}
 		}
 
 		// POST: api/DataBase
 		[HttpPost]
 		public async Task<uint> PostAsync(AddDBFunction addDB)
 		{
-			var receipt = await Service.AddDBRequestAndWaitForReceiptAsync(addDB);
-			var AddDbEvent = receipt.DecodeAllEvents<DbCreatedEventDTO>();
+			using (HttpClient client = new HttpClient())
+			{
+				uint ret = uint.MaxValue;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(addDB));
+				var response = await client.PostAsync(uri + "/", cont);
 
-			return AddDbEvent.LastOrDefault().Event.DbId;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<uint>(t);
+				}
+				Globals.AddDB(ret, addDB.IPAddress.ToString());
+				return ret;
+			}
 		}
 	}
 }

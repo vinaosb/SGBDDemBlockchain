@@ -5,16 +5,16 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace API.SQL.Controllers
+namespace API.Comm.Controllers
 {
 	[Route("api/Comm/[controller]")]
 	[ApiController]
 	public class EscolasController : ControllerBase
 	{
 		private string uri;
-		public EscolasController()
+		public EscolasController(string u = "localhost/api/Escolas")
 		{
-			uri = "localhost/api/Esderecos";
+			uri = u;
 		}
 
 		// GET: api/Escolas

@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Nethereum.Contracts;
 using SharedLibrary.BlockchainToBD;
 using SharedLibrary.BlockchainToBD.ContractDefinition;

@@ -1,31 +1,45 @@
 ﻿
+using API.Comunicacao;
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Contracts;
+using Newtonsoft.Json;
 using SharedLibrary.BlockchainToBD;
 using SharedLibrary.BlockchainToBD.ContractDefinition;
+using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace API.Blockchain.Controllers
+namespace API.Comm.Controllers
 {
 	[Route("api/Comm/[controller]")]
 	[ApiController]
 	public class TablesController : ControllerBase
 	{
-		public BlockchainToBDService Service { get; set; }
-		public TablesController(BlockchainToBDService service)
+		private string uri;
+		public TablesController(string u = "localhost/api/Tables")
 		{
-			Service = service;
+			uri = u;
 		}
 
 		// POST: api/Tables
 		[HttpPost]
-		public async Task<ulong> Post(AddTableFunction addTable)
+		public async Task<ulong> Post(AddTableFunction addTable, Type ty)
 		{
-			var receipt = await Service.AddTableRequestAndWaitForReceiptAsync(addTable);
-			var addTableEvent = receipt.DecodeAllEvents<TableCreatedEventDTO>();
+			using (HttpClient client = new HttpClient())
+			{
+				ulong ret = 0;
+				StringContent cont = new StringContent(JsonConvert.SerializeObject(addTable));
+				var response = await client.PostAsync(uri + "/", cont);
 
-			return addTableEvent.LastOrDefault().Event.TId;
+				if (response.IsSuccessStatusCode)
+				{
+					var t = await response.Content.ReadAsStringAsync();
+					ret = JsonConvert.DeserializeObject<ulong>(t);
+				}
+				Globals.AddTable(ret, ty);
+				return ret;
+			}
 		}
 	}
 }

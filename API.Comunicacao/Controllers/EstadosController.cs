@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace API.SQL.Controllers
+namespace API.Comm.Controllers
 {
 	[Route("api/Comm/[controller]")]
 	[ApiController]
@@ -13,9 +13,9 @@ namespace API.SQL.Controllers
 	{
 		private string uri;
 
-		public EstadosController()
+		public EstadosController(string u = "localhost/api/Estados")
 		{
-			uri = "localhost/api/Estados";
+			uri = u;
 		}
 
 		// GET: api/Estados

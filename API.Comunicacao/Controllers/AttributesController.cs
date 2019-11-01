@@ -6,16 +6,16 @@ using System.Net.Http;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace API.Blockchain.Controllers
+namespace API.Comm.Controllers
 {
 	[Route("api/Comm/[controller]")]
 	[ApiController]
 	public class AttributesController : ControllerBase
 	{
 		private string uri;
-		public AttributesController(BlockchainToBDService service)
+		public AttributesController(string u = "localhost/api/Attributes")
 		{
-			uri = "localhost/api/Attributes";
+			uri = u;
 		}
 
 		// POST: api/Attributes

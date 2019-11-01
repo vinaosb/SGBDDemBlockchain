@@ -19,10 +19,10 @@ namespace API.Blockchain.Controllers
 		}
 
 		// GET: api/Data/db/table/data/hash
-		[HttpGet("{verify}")]
-		public async Task<bool> Get(VerifyFunction verify)
+		[HttpGet("{dbId}/{tId}/{dId}/{h}")]
+		public async Task<bool> Get(uint dbId, ulong tId, BigInteger dId, byte[] h)
 		{
-			return await _service.VerifyQueryAsync(verify);
+			return await _service.VerifyQueryAsync(dbId, tId, dId, h);
 		}
 
 		// POST: api/Data
@@ -47,22 +47,22 @@ namespace API.Blockchain.Controllers
 
 		// DELETE: api/Data/del/
 		[HttpDelete("del/")]
-		public async Task<bool> Delete(DeleteDataFunction del)
+		public async Task<bool> Delete(uint dbId, ulong tId, BigInteger dId, byte[] h)
 		{
-			var receipt = await _service.DeleteDataRequestAndWaitForReceiptAsync(del);
+			var receipt = await _service.DeleteDataRequestAndWaitForReceiptAsync(dbId, tId, dId, h);
 			var DelDataEvent = receipt.DecodeAllEvents<DataDeletedEventDTO>();
 
-			return DelDataEvent.LastOrDefault().Event.DId == del.DId;
+			return DelDataEvent.LastOrDefault().Event.DId == dId;
 		}
 
 		// DELETE: api/Data/all/
 		[HttpDelete("all/")]
-		public async Task<bool> Delete(DeleteDataFromAllFunction del)
+		public async Task<bool> DeleteAll(uint dbId, ulong tId, BigInteger dId, byte[] h)
 		{
-			var receipt = await _service.DeleteDataFromAllRequestAndWaitForReceiptAsync(del);
+			var receipt = await _service.DeleteDataFromAllRequestAndWaitForReceiptAsync(dbId, tId, dId, h);
 			var DelDataEvent = receipt.DecodeAllEvents<DataDeletedEventDTO>();
 
-			return DelDataEvent.LastOrDefault().Event.DId == del.DId;
+			return DelDataEvent.LastOrDefault().Event.DId == dId;
 		}
 	}
 }

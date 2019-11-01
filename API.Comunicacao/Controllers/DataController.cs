@@ -1,69 +1,107 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Contracts;
+using Newtonsoft.Json;
 using SharedLibrary.BlockchainToBD;
 using SharedLibrary.BlockchainToBD.ContractDefinition;
 using System.Linq;
+using System.Net.Http;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace API.Blockchain.Controllers
+namespace API.Comm.Controllers
 {
 	[Route("api/Comm/[controller]")]
 	[ApiController]
 	public class DataController : ControllerBase
 	{
-		public BlockchainToBDService Service { get; set; }
-		public DataController(BlockchainToBDService service)
+		private readonly string uri;
+		public DataController(string u = "localhost/api/Data")
 		{
-			Service = service;
+			uri = u;
 		}
 
 		// GET: api/Data/db/table/data/hash
-		[HttpGet("{verify}")]
-		public async Task<bool> Get(VerifyFunction verify)
+		[HttpGet("{dbId}/{tId}/{dId}/{h}")]
+		public async Task<bool> Get(uint dbId, ulong tId, BigInteger dId, byte[] h)
 		{
-			return await Service.VerifyQueryAsync(verify);
+			using HttpClient client = new HttpClient();
+			bool ret = false;
+			var response = await client.GetAsync(uri + "/" + dbId + "/" + tId + "/" + dId + "/" + h);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var t = await response.Content.ReadAsStringAsync();
+				ret = JsonConvert.DeserializeObject<bool>(t);
+				return ret;
+			}
+			return false;
 		}
 
 		// POST: api/Data
 		[HttpPost]
 		public async Task<BigInteger> Post(AddDataFunction Data)
 		{
-			var receipt = await Service.AddDataRequestAndWaitForReceiptAsync(Data);
-			var AddDataEvent = receipt.DecodeAllEvents<DataModifiedEventDTO>();
+			using HttpClient client = new HttpClient();
+			BigInteger ret = 0;
+			StringContent cont = new StringContent(JsonConvert.SerializeObject(Data));
+			var response = await client.PostAsync(uri + "/", cont);
 
-			return AddDataEvent.LastOrDefault().Event.DId;
+			if (response.IsSuccessStatusCode)
+			{
+				var t = await response.Content.ReadAsStringAsync();
+				ret = JsonConvert.DeserializeObject<BigInteger>(t);
+			}
+			return ret;
 		}
 
 		// PUT: api/Data
 		[HttpPut]
 		public async Task<byte[]> Put(UpdateDataFunction update)
 		{
-			var receipt = await Service.UpdateDataRequestAndWaitForReceiptAsync(update);
-			var AddDataEvent = receipt.DecodeAllEvents<DataModifiedEventDTO>();
+			using HttpClient client = new HttpClient();
+			byte[] ret = null;
+			StringContent cont = new StringContent(JsonConvert.SerializeObject(update));
+			var response = await client.PutAsync(uri + "/", cont);
 
-			return AddDataEvent.LastOrDefault().Event.NextHash;
+			if (response.IsSuccessStatusCode)
+			{
+				var t = await response.Content.ReadAsStringAsync();
+				ret = JsonConvert.DeserializeObject<byte[]>(t);
+			}
+			return ret;
 		}
 
 		// DELETE: api/Data/del/
-		[HttpDelete("del/")]
-		public async Task<bool> Delete(DeleteDataFunction del)
+		[HttpDelete("del/{dbId}/{tId}/{dId}/{h}")]
+		public async Task<bool> Delete(uint dbId, ulong tId, BigInteger dId, byte[] h)
 		{
-			var receipt = await Service.DeleteDataRequestAndWaitForReceiptAsync(del);
-			var DelDataEvent = receipt.DecodeAllEvents<DataDeletedEventDTO>();
+			using HttpClient client = new HttpClient();
+			bool ret = false;
+			var response = await client.DeleteAsync(uri + "/" + dbId + "/" + tId + "/" + dId + "/" + h);
 
-			return DelDataEvent.LastOrDefault().Event.DId == del.DId;
+			if (response.IsSuccessStatusCode)
+			{
+				var t = await response.Content.ReadAsStringAsync();
+				ret = JsonConvert.DeserializeObject<bool>(t);
+			}
+			return ret;
 		}
 
 		// DELETE: api/Data/all/
-		[HttpDelete("all/")]
-		public async Task<bool> Delete(DeleteDataFromAllFunction del)
+		[HttpDelete("all/{dbId}/{tId}/{dId}/{h}")]
+		public async Task<bool> DeleteAll(uint dbId, ulong tId, BigInteger dId, byte[] h)
 		{
-			var receipt = await Service.DeleteDataFromAllRequestAndWaitForReceiptAsync(del);
-			var DelDataEvent = receipt.DecodeAllEvents<DataDeletedEventDTO>();
+			using HttpClient client = new HttpClient();
+			bool ret = false;
+			var response = await client.DeleteAsync(uri + "/" + dbId + "/" + tId + "/" + dId + "/" + h);
 
-			return DelDataEvent.LastOrDefault().Event.DId == del.DId;
+			if (response.IsSuccessStatusCode)
+			{
+				var t = await response.Content.ReadAsStringAsync();
+				ret = JsonConvert.DeserializeObject<bool>(t);
+			}
+			return ret;
 		}
 	}
 }

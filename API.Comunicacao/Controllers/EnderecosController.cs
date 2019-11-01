@@ -5,16 +5,16 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace API.SQL.Controllers
+namespace API.Comm.Controllers
 {
 	[Route("api/Comm/[controller]")]
 	[ApiController]
 	public class EnderecosController : ControllerBase
 	{
 		private string uri;
-		public EnderecosController()
+		public EnderecosController(string u = "localhost/api/Enderecos")
 		{
-			uri = "localhost/api/Enderecos";
+			uri = u;
 		}
 
 		// GET: api/Enderecoes
