@@ -5,16 +5,13 @@
 contract BlockchainToBD {
     struct Attributes {
         uint256 attsId;
-        uint128 numData;
-        mapping(uint128 => Data) data;
+        uint64 numTables;
+        mapping(uint64 => Table) tables;
     }
     
     struct Data {
         bytes32 hash;
         bool deleted;
-        
-        uint256 numAtt;
-        mapping(uint256 => Attributes) atts;
         
         uint64 numTables;
         mapping(uint64 => Table) tables;
@@ -23,6 +20,9 @@ contract BlockchainToBD {
     struct Table {
         uint128 numData;
         mapping(uint128 => Data) dataInTable;
+        
+        uint256 numAtt;
+        mapping(uint256 => Attributes) atts;
         
         uint32 numDB;
         mapping(uint32 => DB) dbs;
@@ -81,21 +81,20 @@ contract BlockchainToBD {
         return dataId;
     }
     
-    function linkDataToAtt(uint32 dbId, uint64 tId, uint128 dataId, uint256 attId) public {
-        atts[attId].data[atts[attId].numData++] = dbs[dbId].tablesInDB[tId].dataInTable[dataId];
-        dbs[dbId].tablesInDB[tId].dataInTable[dataId].atts[dbs[dbId].tablesInDB[tId].dataInTable[dataId].numAtt++] = atts[attId];
+    function linkDataToAtt(uint32 dbId, uint64 tId, uint256 attId) public {
+        atts[attId].tables[atts[attId].numTables++] = dbs[dbId].tablesInDB[tId];
+        dbs[dbId].tablesInDB[tId].atts[dbs[dbId].tablesInDB[tId].numAtt++] = atts[attId];
     }
     
     function updateData(uint32 dbId, uint64 tId, uint128 dId, bytes32 dataHash, bytes32 prevHash) public returns (bool updated) {
         if (prevHash == dbs[dbId].tablesInDB[tId].dataInTable[dId].hash && !dbs[dbId].tablesInDB[tId].dataInTable[dId].deleted) {
             dbs[dbId].tablesInDB[tId].dataInTable[dId].hash = dataHash;
-            for(uint256 i = 0; i < dbs[dbId].tablesInDB[tId].dataInTable[dId].numAtt; i++) {
-                uint256 attId = dbs[dbId].tablesInDB[tId].dataInTable[dId].atts[i].attsId;
+            for(uint256 i = 0; i < dbs[dbId].tablesInDB[tId].numAtt; i++) {
+                uint256 attId = dbs[dbId].tablesInDB[tId].atts[i].attsId;
                 
-                for (uint128 j = 0; j < atts[attId].numData; j++)
-                    for (uint64 k = 0; k < atts[attId].data[j].numTables; k++)
-                        for (uint32 l = 0; l < atts[attId].data[j].tables[k].numDB; l++)
-                            emit DataModified(l, k, j, msg.sender, prevHash, dataHash);
+                for (uint64 k = 0; k < atts[attId].numTables; k++)
+					for (uint32 l = 0; l < atts[attId].tables[k].numDB; l++)
+                        emit DataModified(l, k, dId, msg.sender, prevHash, dataHash);
             }
             
             return true;
@@ -118,14 +117,12 @@ contract BlockchainToBD {
         if (dataHash == dbs[dbId].tablesInDB[tId].dataInTable[dId].hash && !dbs[dbId].tablesInDB[tId].dataInTable[dId].deleted) {
             dbs[dbId].tablesInDB[tId].dataInTable[dId].deleted = true;
             
-            for(uint256 i = 0; i < dbs[dbId].tablesInDB[tId].dataInTable[dId].numAtt; i++) {
-                uint256 attId = dbs[dbId].tablesInDB[tId].dataInTable[dId].atts[i].attsId;
+            for(uint256 i = 0; i < dbs[dbId].tablesInDB[tId].numAtt; i++) {
+                uint256 attId = dbs[dbId].tablesInDB[tId].atts[i].attsId;
                 
-                for (uint128 j = 0; j < atts[attId].numData; j++)
-                    for (uint64 k = 0; k < atts[attId].data[j].numTables; k++)
-                        for (uint32 l = 0; l < atts[attId].data[j].tables[k].numDB; l++)
-                            emit DataDeleted(l, k, j, msg.sender);
-            
+                for (uint64 k = 0; k < atts[attId].numTables; k++)
+					for (uint32 l = 0; l < atts[attId].tables[k].numDB; l++)
+                        emit DataDeleted(l, k, dId, msg.sender);
             }
             return true;
         }
