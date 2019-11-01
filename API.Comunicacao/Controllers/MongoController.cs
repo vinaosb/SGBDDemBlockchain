@@ -5,7 +5,6 @@ using SharedLibrary.Entities.Custom;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using static SharedLibrary.Entities.Custom.ExtrasDaEscola;
 
 namespace API.Mongo.Controllers
 {

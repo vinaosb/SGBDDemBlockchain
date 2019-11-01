@@ -2,7 +2,7 @@ using Nethereum.ABI.FunctionEncoding.Attributes;
 using Nethereum.Contracts;
 using System.Numerics;
 
-namespace API.Blockchain.BlockchainToBD.ContractDefinition
+namespace SharedLibrary.BlockchainToBD.ContractDefinition
 {
 
 

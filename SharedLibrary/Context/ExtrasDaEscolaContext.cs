@@ -1,6 +1,5 @@
 ﻿using MongoDB.Driver;
 using SharedLibrary.Entities.Custom;
-using System;
 using System.Collections.Generic;
 using static SharedLibrary.Entities.Custom.ExtrasDaEscola;
 

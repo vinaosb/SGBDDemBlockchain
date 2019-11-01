@@ -1,7 +1,7 @@
-﻿using API.Blockchain.BlockchainToBD.ContractDefinition;
-using API.Comunicacao;
+﻿using API.Comunicacao;
 using Nethereum.Contracts;
 using Nethereum.Web3;
+using SharedLibrary.BlockchainToBD.ContractDefinition;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using Nethereum.Contracts;
 using SharedLibrary.BlockchainToBD;
 using SharedLibrary.BlockchainToBD.ContractDefinition;
@@ -12,24 +13,24 @@ namespace API.Blockchain.Controllers
 	[ApiController]
 	public class DataController : ControllerBase
 	{
-		public BlockchainToBDService _service { get; set; }
+		public BlockchainToBDService Service { get; set; }
 		public DataController(BlockchainToBDService service)
 		{
-			_service = service;
+			Service = service;
 		}
 
 		// GET: api/Data/db/table/data/hash
 		[HttpGet("{verify}")]
 		public async Task<bool> Get(VerifyFunction verify)
 		{
-			return await _service.VerifyQueryAsync(verify);
+			return await Service.VerifyQueryAsync(verify);
 		}
 
 		// POST: api/Data
 		[HttpPost]
 		public async Task<BigInteger> Post(AddDataFunction Data)
 		{
-			var receipt = await _service.AddDataRequestAndWaitForReceiptAsync(Data);
+			var receipt = await Service.AddDataRequestAndWaitForReceiptAsync(Data);
 			var AddDataEvent = receipt.DecodeAllEvents<DataModifiedEventDTO>();
 
 			return AddDataEvent.LastOrDefault().Event.DId;
@@ -39,7 +40,7 @@ namespace API.Blockchain.Controllers
 		[HttpPut]
 		public async Task<byte[]> Put(UpdateDataFunction update)
 		{
-			var receipt = await _service.UpdateDataRequestAndWaitForReceiptAsync(update);
+			var receipt = await Service.UpdateDataRequestAndWaitForReceiptAsync(update);
 			var AddDataEvent = receipt.DecodeAllEvents<DataModifiedEventDTO>();
 
 			return AddDataEvent.LastOrDefault().Event.NextHash;
@@ -49,7 +50,7 @@ namespace API.Blockchain.Controllers
 		[HttpDelete("del/")]
 		public async Task<bool> Delete(DeleteDataFunction del)
 		{
-			var receipt = await _service.DeleteDataRequestAndWaitForReceiptAsync(del);
+			var receipt = await Service.DeleteDataRequestAndWaitForReceiptAsync(del);
 			var DelDataEvent = receipt.DecodeAllEvents<DataDeletedEventDTO>();
 
 			return DelDataEvent.LastOrDefault().Event.DId == del.DId;
@@ -59,7 +60,7 @@ namespace API.Blockchain.Controllers
 		[HttpDelete("all/")]
 		public async Task<bool> Delete(DeleteDataFromAllFunction del)
 		{
-			var receipt = await _service.DeleteDataFromAllRequestAndWaitForReceiptAsync(del);
+			var receipt = await Service.DeleteDataFromAllRequestAndWaitForReceiptAsync(del);
 			var DelDataEvent = receipt.DecodeAllEvents<DataDeletedEventDTO>();
 
 			return DelDataEvent.LastOrDefault().Event.DId == del.DId;

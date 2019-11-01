@@ -7,6 +7,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.9.2" />
+    <PackageReference Include="Nethereum.Autogen.ContractApi" Version="3.3.0" />
+    <PackageReference Include="Nethereum.Web3" Version="3.4.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.0.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.6.0" />
   </ItemGroup>

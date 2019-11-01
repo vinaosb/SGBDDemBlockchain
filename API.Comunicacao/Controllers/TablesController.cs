@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using Nethereum.Contracts;
 using SharedLibrary.BlockchainToBD;
 using SharedLibrary.BlockchainToBD.ContractDefinition;
@@ -11,17 +12,17 @@ namespace API.Blockchain.Controllers
 	[ApiController]
 	public class TablesController : ControllerBase
 	{
-		public BlockchainToBDService _service { get; set; }
+		public BlockchainToBDService Service { get; set; }
 		public TablesController(BlockchainToBDService service)
 		{
-			_service = service;
+			Service = service;
 		}
 
 		// POST: api/Tables
 		[HttpPost]
 		public async Task<ulong> Post(AddTableFunction addTable)
 		{
-			var receipt = await _service.AddTableRequestAndWaitForReceiptAsync(addTable);
+			var receipt = await Service.AddTableRequestAndWaitForReceiptAsync(addTable);
 			var addTableEvent = receipt.DecodeAllEvents<TableCreatedEventDTO>();
 
 			return addTableEvent.LastOrDefault().Event.TId;

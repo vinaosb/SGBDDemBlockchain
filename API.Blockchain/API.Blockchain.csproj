@@ -11,7 +11,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
-    <PackageReference Include="Nethereum.Autogen.ContractApi" Version="3.3.0" />
     <PackageReference Include="Nethereum.Web3" Version="3.4.0" />
   </ItemGroup>
 

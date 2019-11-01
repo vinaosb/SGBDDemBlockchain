@@ -1,6 +1,4 @@
 using API.Blockchain;
-using API.Blockchain.BlockchainToBD;
-using API.Blockchain.BlockchainToBD.ContractDefinition;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
+using SharedLibrary.BlockchainToBD;
+using SharedLibrary.BlockchainToBD.ContractDefinition;
 
 namespace SGBDDemBlockchain
 {

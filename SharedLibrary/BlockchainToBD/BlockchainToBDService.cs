@@ -1,11 +1,11 @@
-using API.Blockchain.BlockchainToBD.ContractDefinition;
 using Nethereum.Contracts.ContractHandlers;
 using Nethereum.RPC.Eth.DTOs;
+using SharedLibrary.BlockchainToBD.ContractDefinition;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace API.Blockchain.BlockchainToBD
+namespace SharedLibrary.BlockchainToBD
 {
 	public partial class BlockchainToBDService
 	{

@@ -58,7 +58,7 @@ namespace API.SQL.Controllers
 			}
 			catch (DbUpdateConcurrencyException)
 			{
-				if (!CorreioEletronicoExists(ano,id))
+				if (!CorreioEletronicoExists(ano, id))
 				{
 					return NotFound();
 				}
@@ -84,7 +84,7 @@ namespace API.SQL.Controllers
 			}
 			catch (DbUpdateException)
 			{
-				if (CorreioEletronicoExists(correioEletronico.Ano,correioEletronico.CodEntidade))
+				if (CorreioEletronicoExists(correioEletronico.Ano, correioEletronico.CodEntidade))
 				{
 					return Conflict();
 				}
